@@ -59,7 +59,7 @@ const StyledLink = styled(Link)`
 `
 
 
-export class ManagerHome extends Component {
+export class Home extends Component {
   renderLander() {
     return (
       <StyledContainer>
@@ -88,7 +88,7 @@ export class ManagerHome extends Component {
         <Row className="icon-container">
           <Col sm={6}>
             <div>
-              <StyledLink to='/manager/new-resident'>
+              <StyledLink to='/new-resident'>
                 <FaUserPlus className="icon" />
                 <hr />
                 <p>New Resident</p>
@@ -97,7 +97,7 @@ export class ManagerHome extends Component {
           </Col>
           <Col sm={6}>
             <div>
-              <StyledLink to='/manager/maintanance'>
+              <StyledLink to='//maintanance'>
                 <GiAutoRepair className="icon" />
                 <hr />
                 <p>Maintanance</p>
@@ -106,7 +106,7 @@ export class ManagerHome extends Component {
           </Col>
           <Col sm={6}>
             <div>
-              <StyledLink to='/manager/resident'>
+              <StyledLink to='/resident'>
                 <FaUserAlt className="icon" />
                 <hr />
                 <p>User Info</p>
@@ -115,7 +115,7 @@ export class ManagerHome extends Component {
           </Col>
           <Col sm={6}>
             <div>
-              <StyledLink to='/manager/apart'>
+              <StyledLink to='/apart'>
                 <GiHouse className="icon" />
                 <hr />
                 <p>Apartment</p>
@@ -130,11 +130,11 @@ export class ManagerHome extends Component {
   render() {
     console.log(this.props)
     return (
-      this.props.isManagerAuthenticated
+      this.props.isAuthenticated
         ? this.renderManager()
         : this.renderLander()
     )
   }
 }
 
-export default ManagerHome
+export default Home

@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 import { LinkContainer } from "react-router-bootstrap";
 import styled from 'styled-components'
 import Routes from './Routes'
-import { Auth, API } from 'aws-amplify'
+import { Auth } from 'aws-amplify'
 import Theme from './theme'
 import { ThemeProvider } from 'styled-components'
 
@@ -27,15 +27,14 @@ class App extends Component {
       isAuthenticated: false,
       uid: null,
       resident: null,
-      isManagerAuthenticated: false,
       theme: Theme.Basic
     }
   }
 
   componentDidMount = async () => {
     try {
-      const currentUser = await Auth.currentAuthenticatedUser()
-      await this.userHasAuthenticated(currentUser.username)
+      await Auth.currentSession()
+      this.userHasAuthenticated(true)
     } catch (e) {
       console.log(e, e.response)
     }
@@ -43,26 +42,8 @@ class App extends Component {
     this.setState({ isAuthenticating: false })
   }
 
-
-  userHasAuthenticated = async (uid) => {
-    if (uid === "58e15cde-7dca-4453-9336-0bd368960c9e") {
-      this.setState({ isManagerAuthenticated: true })
-      return
-    }
-
-    let resident = null
-    try {
-      resident = await API.get('apt', `/residents/${uid}`)
-    } catch (e) {
-      console.log(e)
-      console.log("Error response : ", e.response)
-    }
-
-    this.setState({
-      isAuthenticated: uid ? true : false,
-      uid,
-      resident
-    })
+  userHasAuthenticated = authenticated => {
+    this.setState({ isAuthenticated: authenticated })
   }
 
   handleLogout = async () => {
@@ -78,10 +59,7 @@ class App extends Component {
   render() {
     const childProps = {
       isAuthenticated: this.state.isAuthenticated,
-      isManagerAuthenticated: this.state.isManagerAuthenticated,
-      uid: this.state.uid,
       userHasAuthenticated: this.userHasAuthenticated,
-      resident: this.state.resident,
       theme: this.state.theme
     }
     console.log(this.state)
@@ -91,15 +69,15 @@ class App extends Component {
         <StyledContainer>
           <Navbar variant="light" bg="light" expand="md">
             <Navbar.Brand>
-              <Link to='/'>SAVOY</Link>
+              <Link to='/'>SAVOY Management</Link>
             </Navbar.Brand>
             <Navbar.Toggle aria-controls="basic-navbar-nav" />
             <Navbar.Collapse id="basic-navbar-nav" className="justify-content-end">
               <Nav className="ml-auto">
                 {this.state.isAuthenticated
-                  ? <Nav.Link onClick={this.handleLogout}>Resident Logout</Nav.Link>
+                  ? <Nav.Link onClick={this.handleLogout}>Manager Logout</Nav.Link>
                   : <LinkContainer to='/login'>
-                    <Nav.Link>Login</Nav.Link>
+                    <Nav.Link>Manager Login</Nav.Link>
                   </LinkContainer>
                 }
               </Nav>

@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import { Form, Row, Col, Container } from "react-bootstrap";
 import { Auth } from "aws-amplify";
 import { Redirect } from "react-router-dom";
-import LoaderButton from "../../components/LoaderButton.js";
+import LoaderButton from "../components/LoaderButton.js";
 import styled from 'styled-components'
 
 const StyledContainer = styled(Container)`
@@ -10,7 +10,7 @@ const StyledContainer = styled(Container)`
   max-width: 500px;
 `
 
-export class ResidentLogin extends Component {
+export class Login extends Component {
   state = {
     email: "",
     password: "",
@@ -33,9 +33,8 @@ export class ResidentLogin extends Component {
     this.setState({ isLoading: true })
 
     try {
-      const user = await Auth.signIn(this.state.email, this.state.password)
-      this.props.userHasAuthenticated(user.username)
-      console.log(user)
+      await Auth.signIn(this.state.email, this.state.password)
+      this.props.userHasAuthenticated(true)
     } catch (e) {
       console.log(e)
       alert(e.message)
@@ -94,4 +93,4 @@ export class ResidentLogin extends Component {
   }
 }
 
-export default ResidentLogin
+export default Login
