@@ -3,7 +3,7 @@ import { Route, Switch } from "react-router-dom";
 import NotFound from './containers/NotFound';
 import AppliedRoute from './components/AppliedRoute'
 import Home from './containers/Home';
-import Login from './containers/Login';
+import Login from './containers/Login'
 
 const Routes = ({ childProps }) => {
   return (

@@ -97,7 +97,7 @@ export class Home extends Component {
           </Col>
           <Col sm={6}>
             <div>
-              <StyledLink to='//maintanance'>
+              <StyledLink to='/maintanance'>
                 <GiAutoRepair className="icon" />
                 <hr />
                 <p>Maintanance</p>
