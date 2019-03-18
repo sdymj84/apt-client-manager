@@ -4,12 +4,14 @@ import NotFound from './containers/NotFound';
 import AppliedRoute from './components/AppliedRoute'
 import Home from './containers/Home';
 import Login from './containers/Login'
+import New from './containers/Resident/New'
 
 const Routes = ({ childProps }) => {
   return (
     <Switch>
       <AppliedRoute exact path='/' component={Home} props={childProps} />
       <AppliedRoute path='/login' component={Login} props={childProps} />
+      <AppliedRoute path='/new-resident' component={New} props={childProps} />
       <Route component={NotFound} />
     </Switch>
   )

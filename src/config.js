@@ -18,7 +18,7 @@ export default {
 
 /*
 
-* GET residents/{id}
+* GET residents/{id} from Resident
 apig-test \
 --username='sdymj84@gmail.com' \
 --password='Apt141246' \
@@ -31,17 +31,17 @@ apig-test \
 --path-template='/residents/63c2799f-d78b-4c0b-b7d5-f362be3b2ae3' \
 --method='GET' \
 
-* GET aparts/{id}
+* GET aparts/{id} from Manager
 apig-test \
---username='sdymj84@gmail.com' \
---password='Apt141246' \
---user-pool-id='us-east-2_DhrStIt3D' \
---app-client-id='8s72qccqdrvlekacimtuol1kl' \
+--username='admin@savoy.com' \
+--password='Roalcls1@' \
+--user-pool-id='us-east-2_Ebfy6fBko' \
+--app-client-id='6c3klu9obknerstuvlq6evl2sn' \
 --cognito-region='us-east-2' \
 --identity-pool-id='us-east-2:560d4916-d2e8-4ee2-bd33-282e6266af18' \
---invoke-url='https://ps9ifgucu4.execute-api.us-east-2.amazonaws.com/dev' \
+--invoke-url='https://ps9ifgucu4.execute-api.us-east-2.amazonaws.com/dev/' \
 --api-gateway-region='us-east-2' \
---path-template='/aparts/2303' \
+--path-template='aparts/0401' \
 --method='GET' \
 
 
