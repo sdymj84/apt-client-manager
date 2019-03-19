@@ -15,7 +15,7 @@
 
 */
 
-import React, { Component } from 'react'
+import React, { Component, Fragment } from 'react'
 import styled from 'styled-components'
 import { Container, Button, Form, Col } from "react-bootstrap";
 import { API } from 'aws-amplify'
@@ -28,7 +28,7 @@ const StyledContainer = styled(Container)`
 const StyledForm = styled(Form)`
   max-width: 500px;
   margin: auto;
-  * {
+  div {
     margin: 10px;
   }
 `
@@ -36,6 +36,15 @@ const StyledForm = styled(Form)`
 const StyledExpandedForm = styled(Form)`
   margin-top: 1em;
   width: 100%;
+  h1 {
+    margin-top: 2em;
+  }
+  h3 {
+    margin-top: 1em;
+  }
+  button {
+    margin: 1em 0;
+  }
 `
 
 export class New extends Component {
@@ -43,8 +52,8 @@ export class New extends Component {
     super(props)
 
     this.state = {
-      apartId: "",
-      isExpanded: false,
+      apartId: "0401",
+      isExpanded: true,
       isLoading: false,
       firstName: "",
       lastName: "",
@@ -57,12 +66,32 @@ export class New extends Component {
         lastName: "",
         phone: "",
       },
+      erContactFirstName: "",
+      erContactLastName: "",
+      erContactPhone: "",
 
+      vehicles: [{
+        year: "",
+        make: "",
+        model: "",
+        color: "",
+        licensePlate: "",
+        state: "",
+      }],
+      notifications: {
+        isVoiceCallSub: false,
+        isTextSub: false,
+        isEmailSub: false,
+      }
     }
   }
 
   validateForm = () => {
     return this.state.email.length > 0 && this.state.firstName.length > 0;
+  }
+
+  validateUnitForm = () => {
+    return this.state.apartId.length > 0;
   }
 
   validateNumber = (e) => {
@@ -77,19 +106,57 @@ export class New extends Component {
     })
   }
 
+  handleErChange = (e) => {
+    e.persist()
+    this.setState(prevState => ({
+      erContact: {
+        ...prevState.erContact,
+        [e.target.id]: e.target.value
+      }
+    }))
+  }
+
+  handleVehiclesChange = (e) => {
+    e.persist()   // To fix Synthetic Events error
+    this.setState(prevState => {
+      const vehicles = prevState.vehicles.map(vehicle => ({
+        ...vehicle,
+        [e.target.id]: e.target.value
+      }))
+      return { vehicles }
+    })
+  }
+
+  handleAddVehicleClick = () => {
+    const newVehicle = {
+      year: "",
+      make: "",
+      model: "",
+      color: "",
+      licensePlate: "",
+      state: ""
+    }
+
+    this.setState(prevState => ({
+      vehicles: [...prevState.vehicles, newVehicle]
+    }))
+  }
+
   handleCheckClick = async (e) => {
     e.preventDefault()
+    this.setState({ isLoading: true })
     try {
       const apt = await API.get('apt', `/aparts/${this.state.apartId}`)
       if (!apt) throw new Error("You entered invalid unit number")
       const msg = !apt.residentId.length
         ? "This unit is currently vacant.\nWould you like to add new resident on this unit?"
         : `Current residents : ${apt.residentId}\nWould you like to add new resident on this unit?`
+      this.setState({ isLoading: false })
       window.confirm(msg)
         && this.setState({ isExpanded: true })
     } catch (e) {
       alert(e.message)
-      this.setState({ isExpanded: false })
+      this.setState({ isExpanded: false, isLoading: false })
       console.log(e, e.response)
     }
   }
@@ -103,11 +170,14 @@ export class New extends Component {
             placeholder="Apt Number" id="apartId"
             value={this.state.apartId}
             onChange={(e) => this.validateNumber(e) && this.handleChange(e)} />
-          <Button type="submit" size="lg"
+          <LoaderButton type="submit" size="lg"
             variant={`outline-${this.props.theme.buttonTheme}`}
-            onClick={this.handleCheckClick}>
-            CHECK
-          </Button>
+            onClick={this.handleCheckClick}
+            disabled={!this.validateUnitForm()}
+            isLoading={this.state.isLoading}
+            text="Check"
+            loadingText="Checking..">
+          </LoaderButton>
         </StyledForm>
 
         {this.state.isExpanded &&
@@ -116,15 +186,15 @@ export class New extends Component {
             <hr />
             <Form.Row>
               <Form.Group as={Col} md={6} controlId="firstName">
-                <Form.Label>firstName</Form.Label>
-                <Form.Control placeholder="First Name"
+                <Form.Label>First Name</Form.Label>
+                <Form.Control
                   onChange={this.handleChange}
                   value={this.state.firstName} />
               </Form.Group>
 
               <Form.Group as={Col} md={6} controlId="lastName">
-                <Form.Label>lastName</Form.Label>
-                <Form.Control placeholder="Last Name"
+                <Form.Label>Last Name</Form.Label>
+                <Form.Control
                   onChange={this.handleChange}
                   value={this.state.lastName} />
               </Form.Group>
@@ -162,19 +232,20 @@ export class New extends Component {
               </Form.Group>
             </Form.Row>
 
-            <hr />
+
             <h3>Emergency Contact</h3>
+            <hr />
             <Form.Row>
               <Form.Group as={Col} md={4} controlId="firstName">
-                <Form.Label>firstName</Form.Label>
-                <Form.Control placeholder="First Name"
-                  onChange={this.handleChange}
+                <Form.Label>First Name</Form.Label>
+                <Form.Control
+                  onChange={this.handleErChange}
                   value={this.state.erContact.firstName} />
               </Form.Group>
 
               <Form.Group as={Col} md={4} controlId="lastName">
-                <Form.Label>lastName</Form.Label>
-                <Form.Control placeholder="Last Name"
+                <Form.Label>Last Name</Form.Label>
+                <Form.Control
                   onChange={this.handleChange}
                   value={this.state.erContact.lastName} />
               </Form.Group>
@@ -187,46 +258,84 @@ export class New extends Component {
               </Form.Group>
             </Form.Row>
 
-            <hr />
+
             <h1>Vehicles</h1>
+            {this.state.vehicles.map((vehicle, i) => {
+              return <Fragment key={i}>
+                <hr />
+                <Form.Row>
+                  <Form.Group as={Col} md={4} controlId="year">
+                    <Form.Label>Year</Form.Label>
+                    <Form.Control placeholder="YYYY"
+                      onChange={(e) => this.validateNumber(e) && this.handleVehiclesChange(e)}
+                      value={vehicle.year} />
+                  </Form.Group>
+
+                  <Form.Group as={Col} md={4} controlId="make">
+                    <Form.Label>Make</Form.Label>
+                    <Form.Control placeholder="Honda"
+                      onChange={this.handleVehiclesChange}
+                      value={vehicle.make} />
+                  </Form.Group>
+
+                  <Form.Group as={Col} md={4} controlId="model">
+                    <Form.Label>Model</Form.Label>
+                    <Form.Control placeholder="Accord"
+                      onChange={this.handleVehiclesChange}
+                      value={vehicle.model} />
+                  </Form.Group>
+                </Form.Row>
+
+                <Form.Row>
+                  <Form.Group as={Col} md={4} controlId="color">
+                    <Form.Label>Color</Form.Label>
+                    <Form.Control
+                      onChange={this.handleVehiclesChange}
+                      value={vehicle.color} />
+                  </Form.Group>
+
+                  <Form.Group as={Col} md={4} controlId="licensePlate">
+                    <Form.Label>License Plate</Form.Label>
+                    <Form.Control
+                      onChange={this.handleVehiclesChange}
+                      value={vehicle.licensePlate} />
+                  </Form.Group>
+
+                  <Form.Group as={Col} md={4} controlId="state">
+                    <Form.Label>State</Form.Label>
+                    <Form.Control
+                      onChange={this.handleVehiclesChange}
+                      value={vehicle.state} />
+                  </Form.Group>
+                </Form.Row>
+              </Fragment>
+            })}
+
+
             <Form.Row>
-              <Form.Group as={Col} md={4} controlId="year">
-                <Form.Label>Year</Form.Label>
-                <Form.Control placeholder="2015"
-                  onChange={(e) => this.validateNumber(e) && this.handleChange(e)}
-                  value={this.state} />
+              <Form.Group as={Col}>
+                <Button
+                  block
+                  variant={`outline-${this.props.theme.buttonTheme}`}
+                  onClick={this.handleAddVehicleClick}
+                >Add Another Vehicle
+              </Button>
               </Form.Group>
 
-              <Form.Group as={Col} md={4} controlId="make">
-                <Form.Label>Make</Form.Label>
-                <Form.Control placeholder="Honda" />
-              </Form.Group>
-
-              <Form.Group as={Col} md={4} controlId="model">
-                <Form.Label>Model</Form.Label>
-                <Form.Control placeholder="Accord" />
+              <Form.Group as={Col}>
+                <Button
+                  block
+                  variant={`outline-${this.props.theme.buttonTheme}`}
+                  onClick={this.handleAddVehicleClick}
+                >Remove Last Vehicle
+              </Button>
               </Form.Group>
             </Form.Row>
 
-            <Form.Row>
-              <Form.Group as={Col} md={4} controlId="color">
-                <Form.Label>Color</Form.Label>
-                <Form.Control placeholder="White" />
-              </Form.Group>
 
-              <Form.Group as={Col} md={4} controlId="licensePlate">
-                <Form.Label>License Plate</Form.Label>
-                <Form.Control placeholder="ABC123" />
-              </Form.Group>
 
-              <Form.Group as={Col} md={4} controlId="state">
-                <Form.Label>State</Form.Label>
-                <Form.Control placeholder="California" />
-              </Form.Group>
-            </Form.Row>
-
-            <hr />
             <h1>User Settings</h1>
+            <hr />
             <Form.Row>
               <Form.Group as={Col} id="isEmailSub">
                 <Form.Check type="checkbox" label="Allow Email Notifications"
@@ -248,42 +357,6 @@ export class New extends Component {
             </Form.Row>
 
 
-
-            {/* - isPet, leaseTerm
-                - erContact { firstName, lastName, phone }
-                - vehicles [{ year, make, model, color, licensePlate, state}]
-                - notification { voiceCall, text, email } 
-            */}
-
-            {/* <Form.Group controlId="address1">
-              <Form.Label>Address</Form.Label>
-              <Form.Control placeholder="1234 Main St" />
-            </Form.Group>
-
-            <Form.Group controlId="address2">
-              <Form.Label>Address 2</Form.Label>
-              <Form.Control placeholder="Apartment, studio, or floor" />
-            </Form.Group>
-
-            <Form.Row>
-              <Form.Group as={Col} xs={12} sm={4} controlId="city">
-                <Form.Label>City</Form.Label>
-                <Form.Control />
-              </Form.Group>
-
-              <Form.Group as={Col} xs={12} sm={4} controlId="state">
-                <Form.Label>State</Form.Label>
-                <Form.Control as="select">
-                  <option>Choose...</option>
-                  <option>...</option>
-                </Form.Control>
-              </Form.Group>
-
-              <Form.Group as={Col} xs={12} sm={4} controlId="zipcode">
-                <Form.Label>Zip</Form.Label>
-                <Form.Control />
-              </Form.Group>
-            </Form.Row> */}
 
             <Form.Group>
               <LoaderButton

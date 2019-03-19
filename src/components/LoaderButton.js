@@ -4,6 +4,8 @@ import { FiRefreshCw } from "react-icons/fi";
 import styled from 'styled-components'
 
 const StyledContainer = styled.div`
+  margin: 1em 0;
+  
   .LoaderButton .spinning {
     margin-right: 7px;
     position: relative;
