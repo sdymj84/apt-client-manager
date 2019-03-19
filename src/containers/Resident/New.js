@@ -89,12 +89,12 @@ export class New extends Component {
             <h1>Profile</h1>
             <hr />
             <Form.Row>
-              <Form.Group as={Col} lg={6} controlId="firstName">
+              <Form.Group as={Col} md={6} controlId="firstName">
                 <Form.Label>firstName</Form.Label>
                 <Form.Control placeholder="First Name" />
               </Form.Group>
 
-              <Form.Group as={Col} lg={6} controlId="lastName">
+              <Form.Group as={Col} md={6} controlId="lastName">
                 <Form.Label>lastName</Form.Label>
                 <Form.Control placeholder="Last Name" />
               </Form.Group>
@@ -114,7 +114,7 @@ export class New extends Component {
 
             <Form.Row>
               <Form.Group as={Col} id="isPrimary">
-                <Form.Check type="checkbox" label="Check if this is primary account of the unit" />
+                <Form.Check className="big-checkbox" type="checkbox" label="Check if this is primary account of the unit" />
               </Form.Group>
 
               <Form.Group as={Col} id="isPet">
@@ -138,6 +138,58 @@ export class New extends Component {
               <Form.Group as={Col} md={4} controlId="phone">
                 <Form.Label>Phone</Form.Label>
                 <Form.Control placeholder="1112223333" />
+              </Form.Group>
+            </Form.Row>
+
+            <hr />
+            <h1>Vehicles</h1>
+            <Form.Row>
+              <Form.Group as={Col} md={4} controlId="year">
+                <Form.Label>Year</Form.Label>
+                <Form.Control placeholder="2015" />
+              </Form.Group>
+
+              <Form.Group as={Col} md={4} controlId="make">
+                <Form.Label>Make</Form.Label>
+                <Form.Control placeholder="Honda" />
+              </Form.Group>
+
+              <Form.Group as={Col} md={4} controlId="model">
+                <Form.Label>Model</Form.Label>
+                <Form.Control placeholder="Accord" />
+              </Form.Group>
+            </Form.Row>
+
+            <Form.Row>
+              <Form.Group as={Col} md={4} controlId="color">
+                <Form.Label>Color</Form.Label>
+                <Form.Control placeholder="White" />
+              </Form.Group>
+
+              <Form.Group as={Col} md={4} controlId="licensePlate">
+                <Form.Label>License Plate</Form.Label>
+                <Form.Control placeholder="ABC123" />
+              </Form.Group>
+
+              <Form.Group as={Col} md={4} controlId="state">
+                <Form.Label>State</Form.Label>
+                <Form.Control placeholder="California" />
+              </Form.Group>
+            </Form.Row>
+
+            <hr />
+            <h1>User Settings</h1>
+            <Form.Row>
+              <Form.Group as={Col} id="email">
+                <Form.Check type="checkbox" label="Allow Email Notifications" />
+              </Form.Group>
+
+              <Form.Group as={Col} id="text">
+                <Form.Check type="checkbox" label="Allow Text Notifications" />
+              </Form.Group>
+
+              <Form.Group as={Col} id="voiceCall">
+                <Form.Check type="checkbox" label="Allow Voice call" />
               </Form.Group>
             </Form.Row>
 
