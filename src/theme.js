@@ -1,6 +1,7 @@
 export default {
   Basic: {
     hoverColor: "green",
-    brandColor: "#323"
+    brandColor: "#323",
+    buttonTheme: "secondary",
   }
 }

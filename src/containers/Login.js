@@ -77,7 +77,7 @@ export class Login extends Component {
             <Col sm={{ span: 10, offset: 2 }}>
               <LoaderButton
                 block
-                variant="outline-secondary"
+                variant={`outline-${this.props.theme.buttonTheme}`}
                 disabled={!this.validateForm()}
                 type="submit"
                 isLoading={this.state.isLoading}

@@ -19,6 +19,7 @@ import React, { Component } from 'react'
 import styled from 'styled-components'
 import { Container, Button, Form, Col } from "react-bootstrap";
 import { API } from 'aws-amplify'
+import LoaderButton from '../../components/LoaderButton'
 
 const StyledContainer = styled(Container)`
   margin-top: 3em;
@@ -44,14 +45,36 @@ export class New extends Component {
     this.state = {
       apartId: "",
       isExpanded: false,
+      isLoading: false,
+      firstName: "",
+      lastName: "",
+      email: "",
+      phone: "",
+      isPrimary: false,
+      isPet: false,
+      erContact: {
+        firstName: "",
+        lastName: "",
+        phone: "",
+      },
+
     }
   }
 
+  validateForm = () => {
+    return this.state.email.length > 0 && this.state.firstName.length > 0;
+  }
+
+  validateNumber = (e) => {
+    return e.target.value.match(/^[0-9]+$|^$/)
+  }
+
   handleChange = (e) => {
-    e.target.value.match(/^[0-9]+$|^$/) &&
-      this.setState({
-        [e.target.id]: e.target.value
-      })
+    const target = e.target
+    const value = target.type === "checkbox" ? target.checked : target.value
+    this.setState({
+      [target.id]: value
+    })
   }
 
   handleCheckClick = async (e) => {
@@ -70,15 +93,18 @@ export class New extends Component {
       console.log(e, e.response)
     }
   }
+
   render() {
+    console.log(this.state)
     return (
       <StyledContainer>
         <StyledForm inline>
           <Form.Control size="lg" type="text"
             placeholder="Apt Number" id="apartId"
             value={this.state.apartId}
-            onChange={this.handleChange} />
+            onChange={(e) => this.validateNumber(e) && this.handleChange(e)} />
           <Button type="submit" size="lg"
+            variant={`outline-${this.props.theme.buttonTheme}`}
             onClick={this.handleCheckClick}>
             CHECK
           </Button>
@@ -91,34 +117,48 @@ export class New extends Component {
             <Form.Row>
               <Form.Group as={Col} md={6} controlId="firstName">
                 <Form.Label>firstName</Form.Label>
-                <Form.Control placeholder="First Name" />
+                <Form.Control placeholder="First Name"
+                  onChange={this.handleChange}
+                  value={this.state.firstName} />
               </Form.Group>
 
               <Form.Group as={Col} md={6} controlId="lastName">
                 <Form.Label>lastName</Form.Label>
-                <Form.Control placeholder="Last Name" />
+                <Form.Control placeholder="Last Name"
+                  onChange={this.handleChange}
+                  value={this.state.lastName} />
               </Form.Group>
             </Form.Row>
 
             <Form.Row>
               <Form.Group as={Col} lg={6} controlId="email">
                 <Form.Label>Email</Form.Label>
-                <Form.Control type="email" placeholder="Enter email" />
+                <Form.Control type="email" placeholder="email@savoy.com"
+                  onChange={this.handleChange}
+                  value={this.state.email} />
               </Form.Group>
 
               <Form.Group as={Col} lg={6} controlId="phone">
                 <Form.Label>Phone</Form.Label>
-                <Form.Control placeholder="1112223333" />
+                <Form.Control placeholder="1112223333"
+                  onChange={(e) => this.validateNumber(e) && this.handleChange(e)}
+                  value={this.state.phone} />
               </Form.Group>
             </Form.Row>
 
             <Form.Row>
-              <Form.Group as={Col} id="isPrimary">
-                <Form.Check className="big-checkbox" type="checkbox" label="Check if this is primary account of the unit" />
+              <Form.Group as={Col} controlId="isPrimary">
+                <Form.Check type="checkbox"
+                  label="Check if this is primary account of the unit"
+                  onChange={this.handleChange}
+                  checked={this.state.isPrimary} />
               </Form.Group>
 
-              <Form.Group as={Col} id="isPet">
-                <Form.Check type="checkbox" label="Check if there's pet" />
+              <Form.Group as={Col} controlId="isPet">
+                <Form.Check type="checkbox"
+                  label="Check if there's pet"
+                  onChange={this.handleChange}
+                  checked={this.state.isPet} />
               </Form.Group>
             </Form.Row>
 
@@ -127,17 +167,23 @@ export class New extends Component {
             <Form.Row>
               <Form.Group as={Col} md={4} controlId="firstName">
                 <Form.Label>firstName</Form.Label>
-                <Form.Control placeholder="First Name" />
+                <Form.Control placeholder="First Name"
+                  onChange={this.handleChange}
+                  value={this.state.erContact.firstName} />
               </Form.Group>
 
               <Form.Group as={Col} md={4} controlId="lastName">
                 <Form.Label>lastName</Form.Label>
-                <Form.Control placeholder="Last Name" />
+                <Form.Control placeholder="Last Name"
+                  onChange={this.handleChange}
+                  value={this.state.erContact.lastName} />
               </Form.Group>
 
               <Form.Group as={Col} md={4} controlId="phone">
                 <Form.Label>Phone</Form.Label>
-                <Form.Control placeholder="1112223333" />
+                <Form.Control placeholder="1112223333"
+                  onChange={(e) => this.validateNumber(e) && this.handleChange(e)}
+                  value={this.state.erContact.phone} />
               </Form.Group>
             </Form.Row>
 
@@ -146,7 +192,9 @@ export class New extends Component {
             <Form.Row>
               <Form.Group as={Col} md={4} controlId="year">
                 <Form.Label>Year</Form.Label>
-                <Form.Control placeholder="2015" />
+                <Form.Control placeholder="2015"
+                  onChange={(e) => this.validateNumber(e) && this.handleChange(e)}
+                  value={this.state} />
               </Form.Group>
 
               <Form.Group as={Col} md={4} controlId="make">
@@ -180,16 +228,22 @@ export class New extends Component {
             <hr />
             <h1>User Settings</h1>
             <Form.Row>
-              <Form.Group as={Col} id="email">
-                <Form.Check type="checkbox" label="Allow Email Notifications" />
+              <Form.Group as={Col} id="isEmailSub">
+                <Form.Check type="checkbox" label="Allow Email Notifications"
+                  onChange={this.handleChange}
+                  checked={this.state.isEmailSub} />
               </Form.Group>
 
-              <Form.Group as={Col} id="text">
-                <Form.Check type="checkbox" label="Allow Text Notifications" />
+              <Form.Group as={Col} id="isTextSub">
+                <Form.Check type="checkbox" label="Allow Text Notifications"
+                  onChange={this.handleChange}
+                  checked={this.state.isTextSub} />
               </Form.Group>
 
-              <Form.Group as={Col} id="voiceCall">
-                <Form.Check type="checkbox" label="Allow Voice call" />
+              <Form.Group as={Col} id="isVoiceCallSub">
+                <Form.Check type="checkbox" label="Allow Voice call"
+                  onChange={this.handleChange}
+                  checked={this.state.isVoiceCallSub} />
               </Form.Group>
             </Form.Row>
 
@@ -231,9 +285,17 @@ export class New extends Component {
               </Form.Group>
             </Form.Row> */}
 
-            <Button variant="primary" type="submit">
-              Submit
-            </Button>
+            <Form.Group>
+              <LoaderButton
+                block
+                variant={`outline-${this.props.theme.buttonTheme}`}
+                disabled={!this.validateForm()}
+                type="submit"
+                isLoading={this.state.isLoading}
+                text="Submit"
+                loadingText="Submitting…"
+              />
+            </Form.Group>
           </StyledExpandedForm>
         }
 
