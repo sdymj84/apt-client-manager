@@ -11,17 +11,24 @@
   - vehicles [{ year, make, model, color, licensePlate, state}]
   - notifications { voiceCall, text, email }
   -> Submit -> Step 3
-3. 
+3. Add more resident in the unit? 
+    Yes -> Clear state
+    No -> Go back to main page
 
 */
 
 import React, { Component, Fragment } from 'react'
 import styled from 'styled-components'
-import { Container, Button, Form, Col, Modal } from "react-bootstrap";
+import { Container, Button, Form, Col } from "react-bootstrap";
 import Amplify, { API, Auth } from 'aws-amplify'
 import LoaderButton from '../../components/LoaderButton'
 import { resident, manager } from '../../aws-export'
+import ConfirmModal from '../../components/ConfirmModal'
 
+
+/*===============================================================
+  Styles
+===============================================================*/
 const StyledContainer = styled(Container)`
   margin-top: 3em;
 `
@@ -48,13 +55,16 @@ const StyledExpandedForm = styled(Form)`
   }
 `
 
+
+
 export class New extends Component {
   constructor(props) {
     super(props)
-
+    this.profileRef = React.createRef()
     this.state = {
-      modalExpandShow: false,
-      modalSubmittedShow: false,
+      modalShow: false,
+      modalActive: 0, // 1: expand?, 2: submitted add more?
+      modalMessage: "",
       residentId: "",
       apartId: "",
       regiNum: "",
@@ -88,6 +98,10 @@ export class New extends Component {
     }
   }
 
+
+  /*===============================================================
+    Form Validation
+  ===============================================================*/
   validateForm = () => {
     return this.state.email.length > 0
       && this.state.firstName.length > 0
@@ -100,6 +114,34 @@ export class New extends Component {
 
   validateNumber = (e) => {
     return e.target.value.match(/^[0-9]+$|^$/)
+  }
+
+
+  /*===============================================================
+    Event Handlers
+  ===============================================================*/
+  handleModalNo = () => {
+    this.setState({ modalShow: false })
+
+    this.state.modalActive === 2
+      && this.props.history.push('/')
+  }
+
+  handleModalYes = async () => {
+    this.setState({ modalShow: false })
+
+    switch (this.state.modalActive) {
+      case 1:
+        this.setState({ isExpanded: true })
+        break;
+      case 2:
+        // State initialize
+        this.initializeForm()
+        window.scrollTo(0, this.profileRef.current.offsetTop)
+        break;
+      default:
+        break;
+    }
   }
 
   handleChange = (e) => {
@@ -183,12 +225,18 @@ export class New extends Component {
       const msg = !apt.residentId.length
         ? "This unit is currently vacant.\nWould you like to add new resident on this unit?"
         : `Current residents : ${apt.residentId}\nWould you like to add new resident on this unit?`
-      this.setState({ isLoading: false })
-      window.confirm(msg)
-        && this.setState({ isExpanded: true })
+      this.setState({
+        isLoading: false,
+        modalMessage: msg,
+        modalActive: 1,
+        modalShow: true
+      })
     } catch (e) {
       alert(e.message)
-      this.setState({ isExpanded: false, isLoading: false })
+      this.setState({
+        isExpanded: false,
+        isLoading: false
+      })
       console.log(e, e.response)
     }
   }
@@ -207,14 +255,24 @@ export class New extends Component {
       const residentId = await this.residentSignUp(credentials)
       await this.setState({ residentId, regiNum })
       await this.createResidentDB()
-      // window.confirm("Resident is successfully added.\n \
-      //   Would you like to add more resident in this unit?")
+      this.setState({
+        modalMessage: "Resident is successfully added.\nWould you like to add more resident in this unit?",
+        modalActive: 2,
+        modalShow: true,
+        isLoading: false
+      })
+      // No -> go to main page
+      // Yes -> expand true, state initialize
     } catch (e) {
       Amplify.configure(manager)
       this.setState({ isLoading: false })
     }
   }
 
+
+  /*===============================================================
+    Other Functions
+  ===============================================================*/
   residentSignUp = async (credentials) => {
     try {
       Amplify.configure(resident)
@@ -240,8 +298,48 @@ export class New extends Component {
     }
   }
 
+  initializeForm = () => {
+    this.setState({
+      firstName: "",
+      lastName: "",
+      email: "",
+      phone: "",
+      isPrimary: false,
+      isPet: false,
+      erContact: {
+        firstName: "",
+        lastName: "",
+        phone: "",
+      },
+      vehicles: [{
+        year: "",
+        make: "",
+        model: "",
+        color: "",
+        licensePlate: "",
+        state: "",
+      }],
+      notifications: {
+        isVoiceCallSub: false,
+        isTextSub: false,
+        isEmailSub: false,
+      },
+    })
+  }
 
+
+  /*===============================================================
+    Render
+  ===============================================================*/
   render() {
+    const modalProps = {
+      modalShow: this.state.modalShow,
+      modalMessage: this.state.modalMessage,
+      handleModalYes: this.handleModalYes,
+      handleModalNo: this.handleModalNo,
+      theme: this.props.theme
+    }
+
     return (
       <StyledContainer>
         <StyledForm inline>
@@ -261,7 +359,7 @@ export class New extends Component {
 
         {this.state.isExpanded &&
           <StyledExpandedForm onSubmit={this.handleSubmit}>
-            <h1>Profile</h1>
+            <h1 ref={this.profileRef}>Profile</h1>
             <hr />
             <Form.Row>
               <Form.Group as={Col} md={6} controlId="firstName">
@@ -449,7 +547,7 @@ export class New extends Component {
           </StyledExpandedForm>
         }
 
-
+        <ConfirmModal modalProps={modalProps} />
 
       </StyledContainer>
     )
