@@ -222,9 +222,11 @@ export class New extends Component {
     try {
       const apt = await API.get('apt', `/aparts/${this.state.apartId}`)
       if (!apt) throw new Error("You entered invalid unit number")
-      const msg = !apt.residentId.length
-        ? "This unit is currently vacant.\nWould you like to add new resident on this unit?"
-        : `Current residents : ${apt.residentId}\nWould you like to add new resident on this unit?`
+      const msg = !apt.residents.length
+        ? "This unit is currently vacant.<br/>Would you like to add new resident on this unit?"
+        : `<p>Current residents in this unit :</p>
+        ${apt.residents.map(resident => resident.name).toString().replace(/,/g, '<hr/>')}
+        <hr/><p>Would you like to add new resident on this unit?</p>`
       this.setState({
         isLoading: false,
         modalMessage: msg,
@@ -255,6 +257,7 @@ export class New extends Component {
       const residentId = await this.residentSignUp(credentials)
       await this.setState({ residentId, regiNum })
       await this.createResidentDB()
+      await this.updateResidentInUnit()
       this.setState({
         modalMessage: "Resident is successfully added.\nWould you like to add more resident in this unit?",
         modalActive: 2,
@@ -295,6 +298,21 @@ export class New extends Component {
       console.log("New resident is successfully added")
     } catch (e) {
       console.log("Error while creating Resident DB : ", e, e.response)
+    }
+  }
+
+  updateResidentInUnit = async () => {
+    try {
+      await API.put('apt',
+        `/aparts/${this.state.apartId}/add`, {
+          body: {
+            residentId: this.state.residentId,
+            name: this.state.firstName + " " + this.state.lastName
+          }
+        })
+      console.log("Resident is successfully added to the unit")
+    } catch (e) {
+      console.log("Error while updating resident in the unit :", e, e.response)
     }
   }
 
