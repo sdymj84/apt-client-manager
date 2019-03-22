@@ -8,6 +8,7 @@ import { Auth } from 'aws-amplify'
 import Theme from './theme'
 import { ThemeProvider } from 'styled-components'
 
+
 const GlobalStyle = createGlobalStyle`
   body {
     background-color: ${props => props.theme.backgroundColor};
@@ -41,7 +42,7 @@ class App extends Component {
       await Auth.currentSession()
       this.userHasAuthenticated(true)
     } catch (e) {
-      console.log(e, e.response)
+      console.log(e)
     }
 
     this.setState({ isAuthenticating: false })
@@ -67,7 +68,6 @@ class App extends Component {
       userHasAuthenticated: this.userHasAuthenticated,
       theme: this.state.theme
     }
-    console.log(this.state)
     return (
       !this.state.isAuthenticating &&
       <ThemeProvider theme={this.state.theme}>
