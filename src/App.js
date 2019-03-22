@@ -2,12 +2,17 @@ import React, { Component } from 'react';
 import { Container, Navbar, Nav } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import { LinkContainer } from "react-router-bootstrap";
-import styled from 'styled-components'
+import styled, { createGlobalStyle } from 'styled-components'
 import Routes from './Routes'
 import { Auth } from 'aws-amplify'
 import Theme from './theme'
 import { ThemeProvider } from 'styled-components'
 
+const GlobalStyle = createGlobalStyle`
+  body {
+    background-color: ${props => props.theme.backgroundColor};
+  }
+`
 
 const StyledContainer = styled(Container)`
   margin-top: 15px;
@@ -67,7 +72,9 @@ class App extends Component {
       !this.state.isAuthenticating &&
       <ThemeProvider theme={this.state.theme}>
         <StyledContainer>
-          <Navbar variant="light" bg="light" expand="md">
+          <GlobalStyle />
+          <Navbar variant={childProps.theme.navbarTheme}
+            bg={childProps.theme.navbarTheme} expand="md">
             <Navbar.Brand>
               <Link to='/'>SAVOY Management</Link>
             </Navbar.Brand>

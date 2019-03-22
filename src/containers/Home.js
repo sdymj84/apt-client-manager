@@ -49,7 +49,7 @@ const FlexContainer = styled.div`
 `
 
 const StyledLink = styled(Link)`
-  color: #333333;
+  color: ${props => props.theme.iconColor};
   text-decoration: none;
 
   :hover, :active {
