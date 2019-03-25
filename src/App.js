@@ -67,7 +67,6 @@ class App extends Component {
       userHasAuthenticated: this.userHasAuthenticated,
       theme: this.state.theme
     }
-    console.log(this.state)
     return (
       !this.state.isAuthenticating &&
       <ThemeProvider theme={this.state.theme}>
