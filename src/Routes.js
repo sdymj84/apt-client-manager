@@ -13,7 +13,7 @@ const Routes = ({ childProps }) => {
       <AppliedRoute exact path='/' component={Home} props={childProps} />
       <AppliedRoute path='/login' component={Login} props={childProps} />
       <AppliedRoute path='/new-resident' component={New} props={childProps} />
-      <AppliedRoute path='/apart' component={ApartInfo} props={childProps} />
+      <AppliedRoute path='/aparts' component={ApartInfo} props={childProps} />
       <Route component={NotFound} />
     </Switch>
   )

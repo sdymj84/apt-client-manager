@@ -18,10 +18,8 @@ const StyledCard = styled(Card)`
     display: flex;
     align-items: center;
     justify-content: space-between;
-    
-    span:first-child {
-      flex-basis: auto;
-    }
+    flex-wrap: wrap;
+
     span:last-child {
       flex-basis: 0;
     }
@@ -92,7 +90,7 @@ const UnitInfo = ({ props, ...rest }) => {
                 <Col>Current Residents</Col>
                 <Col>
                   {apart.residents.map((resident, i) =>
-                    <span key={i}>{resident.name}</span>
+                    <div key={i}>{resident.name}</div>
                   )}
                 </Col>
               </Row>
@@ -158,16 +156,27 @@ const UnitInfo = ({ props, ...rest }) => {
               </ListGroup.Item>
 
               {resident.vehicles.map((vehicle, i) =>
-                <ListGroup.Item key={i}>
+                vehicle.model && <ListGroup.Item key={i}>
                   <Row>
                     <Col sm={4}>Vehicle</Col>
                     <Col sm={8}>
-                      {vehicle.year} {vehicle.color} {vehicle.make} {vehicle.model}
-                      - {vehicle.licensePlate} {vehicle.state}
+                      <div>{vehicle.year} {vehicle.color} {vehicle.make} {vehicle.model}</div>
+                      <div>{vehicle.licensePlate} / {vehicle.state}</div>
                     </Col>
                   </Row>
                 </ListGroup.Item>
               )}
+
+              <ListGroup.Item>
+                <Row>
+                  <Col sm={4}>Emergency Contact</Col>
+                  <Col sm={8}>
+                    <div>{resident.erContact.firstName} {resident.erContact.lastName}</div>
+                    <div>{formatPhoneNumber(resident.erContact.phone)}</div>
+                  </Col>
+                </Row>
+              </ListGroup.Item>
+
             </ListGroup>
           </Card.Body>
         </StyledCard>

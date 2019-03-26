@@ -2,8 +2,9 @@ import React, { Component } from 'react'
 import styled from 'styled-components'
 import { Container, Button, Row, Col } from "react-bootstrap";
 import { LinkContainer } from "react-router-bootstrap";
-import { FaUserAlt, FaUserPlus } from "react-icons/fa";
+import { FaUserPlus } from "react-icons/fa";
 import { GiAutoRepair, GiHouse } from "react-icons/gi";
+import { GoMegaphone } from 'react-icons/go'
 import { Link } from "react-router-dom";
 
 const StyledContainer = styled(Container)`
@@ -97,7 +98,7 @@ export class Home extends Component {
           </Col>
           <Col sm={6}>
             <div>
-              <StyledLink to='/maintanance'>
+              <StyledLink to='/maintanances'>
                 <GiAutoRepair className="icon" />
                 <hr />
                 <p>Maintanance</p>
@@ -106,16 +107,16 @@ export class Home extends Component {
           </Col>
           <Col sm={6}>
             <div>
-              <StyledLink to='/resident'>
-                <FaUserAlt className="icon" />
+              <StyledLink to='/announcement'>
+                <GoMegaphone className="icon" />
                 <hr />
-                <p>User Info</p>
+                <p>Announcement</p>
               </StyledLink>
             </div>
           </Col>
           <Col sm={6}>
             <div>
-              <StyledLink to='/apart'>
+              <StyledLink to='/aparts'>
                 <GiHouse className="icon" />
                 <hr />
                 <p>Apartment</p>
@@ -128,7 +129,6 @@ export class Home extends Component {
   }
 
   render() {
-    console.log(this.props)
     return (
       this.props.isAuthenticated
         ? this.renderManager()
