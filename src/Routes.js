@@ -6,6 +6,7 @@ import Home from './containers/Home';
 import Login from './containers/Login'
 import New from './containers/Resident/New'
 import ApartInfo from './containers/Apart/Info';
+import Announcement from './containers/Apart/Announcement';
 
 const Routes = ({ childProps }) => {
   return (
@@ -14,6 +15,7 @@ const Routes = ({ childProps }) => {
       <AppliedRoute path='/login' component={Login} props={childProps} />
       <AppliedRoute path='/new-resident' component={New} props={childProps} />
       <AppliedRoute path='/aparts' component={ApartInfo} props={childProps} />
+      <AppliedRoute path='/announcement' component={Announcement} props={childProps} />
       <Route component={NotFound} />
     </Switch>
   )
