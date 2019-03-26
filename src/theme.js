@@ -6,6 +6,7 @@ export default {
     buttonTheme: "secondary",
     iconColor: "#333333",
     backgroundColor: "white",
+    boxBorder: "green",
   },
   Style1: {
     hoverColor: "turqoise",
@@ -14,5 +15,6 @@ export default {
     buttonTheme: "info",
     iconColor: "green",
     backgroundColor: "#f7f7f7",
+    boxBorder: "red",
   }
 }
