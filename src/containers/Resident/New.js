@@ -31,13 +31,9 @@ import ConfirmModal from '../../components/ConfirmModal'
 ===============================================================*/
 const StyledContainer = styled(Container)`
   margin-top: 3em;
-`
-
-const StyledForm = styled(Form)`
-  max-width: 500px;
-  margin: auto;
-  div {
-    margin: 10px;
+  .unit-search {
+    max-width: 500px;
+    margin: auto;
   }
 `
 
@@ -61,6 +57,7 @@ export class New extends Component {
   constructor(props) {
     super(props)
     this.profileRef = React.createRef()
+    this.unitSearchRef = React.createRef()
     this.state = {
       modalShow: false,
       modalActive: 0, // 1: expand?, 2: submitted add more?
@@ -98,6 +95,10 @@ export class New extends Component {
     }
   }
 
+
+  componentDidMount = () => {
+    this.unitSearchRef.current.focus()
+  }
 
   /*===============================================================
     Form Validation
@@ -137,9 +138,13 @@ export class New extends Component {
       case 2:
         // State initialize
         this.initializeForm()
-        window.scrollTo(0, this.profileRef.current.offsetTop)
         break;
       default:
+        window.scrollTo({
+          top: this.profileRef.current.offsetTop,
+          left: 0,
+          behavior: 'smooth'
+        })
         break;
     }
   }
@@ -360,12 +365,14 @@ export class New extends Component {
 
     return (
       <StyledContainer>
-        <StyledForm inline>
+        <Form className="unit-search">
           <Form.Control size="lg" type="text"
             placeholder="Apt Number" id="apartId"
             value={this.state.apartId}
+            ref={this.unitSearchRef}
             onChange={(e) => this.validateNumber(e) && this.handleChange(e)} />
-          <LoaderButton type="submit" size="lg"
+          <LoaderButton type="submit"
+            block
             variant={`outline-${this.props.theme.buttonTheme}`}
             onClick={this.handleCheckClick}
             disabled={!this.validateUnitForm()}
@@ -373,7 +380,7 @@ export class New extends Component {
             text="Check"
             loadingText="Checking..">
           </LoaderButton>
-        </StyledForm>
+        </Form>
 
         {this.state.isExpanded &&
           <StyledExpandedForm onSubmit={this.handleSubmit}>

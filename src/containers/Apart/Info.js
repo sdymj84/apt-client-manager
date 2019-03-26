@@ -1,70 +1,27 @@
-import React, { Component, Fragment } from 'react'
+/* Logic Flow
+1. Show Savoy apartment info
+2. Enter apart number to show unit info
+  -> Look up Apart DB : API GET /aparts/{id}
+  -> Get residents info who live in the unit
+  -> Get residents info and store both of apart, resident in state
+3. Swap primary resident to residents[0]
+4. Render apart, resident info
+
+*/
+
+import React, { Component } from 'react'
 import styled from 'styled-components'
-import { Container, Image, Row, Col, Form, Card, ListGroup, Button, Badge } from "react-bootstrap";
+import { Container, Image, Row, Col, Form } from "react-bootstrap";
 import LoaderButton from '../../components/LoaderButton'
 import { API } from 'aws-amplify'
-// import { Link } from 'react-router-dom'
-// import moment from 'moment'
+import UnitInfo from './UnitInfo'
 
 
-/*===============================================================
-  Styles
-===============================================================*/
 const StyledContainer = styled(Container)`
   margin-top: 30px; 
-  .unit-form-container {
-    display: flex;
-    justify-content: flex-end;
-  }
-  span {
-    display: inline-block;
-    
-    :first-child {
-      width: 100%;
-      max-width: 300px;
-    }
-  }
-
-  @media (max-width: 576px) {
-    span {
-      display: block;
-    }
-  }
-
-  .list-group-item:first-child {
-    border-top: 2px solid #005916;
-  }
 
   .btn-container {
     text-align: right;
-  }
-  button {
-    margin: 0 0 5px 5px;
-  }
-`
-
-const StyledForm = styled(Form)`
-  max-width: 500px;
-  margin-top: 1em;
-  div {
-    margin: 10px;
-  }
-`
-
-const StyledExpandedForm = styled(Form)`
-  margin-top: 2em;
-  width: 100%;
-  button {
-    margin: 1em 0;
-  }
-`
-
-const StyledCard = styled(Card)`
-  margin-bottom: 20px;
-  #badge {
-    float: right;
-    width: 100px;
-    padding: 5px;
   }
 `
 
@@ -89,18 +46,33 @@ const StyledApartList = styled.div`
   }
 `
 
+const StyledForm = styled(Form)`
+  max-width: 500px;
+  margin: 2em auto 3em auto;
+`
+
+
+
 export class ApartInfo extends Component {
-  state = {
-    apartId: "",
-    isLoading: false,
-    isExpanded: false,
-    residents: [],
-    apart: "",
+  constructor(props) {
+    super(props)
+
+    this.apartRef = React.createRef()
+    this.unitSearchRef = React.createRef()
+    this.state = {
+      apartId: "0402",
+      isLoading: false,
+      isExpanded: false,
+      residents: [],
+      apart: "",
+    }
   }
 
-  /*===============================================================
-    Form Validation
-  ===============================================================*/
+  componentDidMount = () => {
+    this.unitSearchRef.current.focus()
+  }
+
+
   validateForm = () => {
     return this.state.email.length > 0
       && this.state.firstName.length > 0
@@ -129,7 +101,6 @@ export class ApartInfo extends Component {
       const apart = await API.get('apt', `/aparts/${this.state.apartId}`)
       if (!apart) throw new Error("You entered invalid unit number")
       const residents = apart.residents.map(async resident => {
-        console.log(resident)
         return await API.get('apt', `/residents/${resident.id}`)
       })
       Promise.all(residents).then((residents) => {
@@ -150,6 +121,11 @@ export class ApartInfo extends Component {
           isExpanded: true,
           residents,
           apart
+        })
+        window.scrollTo({
+          top: this.apartRef.current.offsetTop,
+          left: 0,
+          behavior: 'smooth'
         })
       })
     } catch (e) {
@@ -183,13 +159,15 @@ export class ApartInfo extends Component {
             </Col>
           </Row>
         </StyledApartList>
-        <div className="unit-form-container">
-          <StyledForm inline>
+        <div>
+          <StyledForm>
             <Form.Control size="lg" type="text"
               placeholder="Apt Number" id="apartId"
               value={this.state.apartId}
+              ref={this.unitSearchRef}
               onChange={(e) => this.validateNumber(e) && this.handleChange(e)} />
-            <LoaderButton type="submit" size="lg"
+            <LoaderButton type="submit"
+              block
               variant={`outline-${this.props.theme.buttonTheme}`}
               onClick={this.handleCheckClick}
               disabled={!this.validateUnitForm()}
@@ -201,61 +179,11 @@ export class ApartInfo extends Component {
         </div>
 
         {this.state.isExpanded && apart &&
-          <StyledExpandedForm>
-            <h1>Apart Info</h1>
-            <hr />
-            <div className="btn-container">
-              <Button variant={`outline-${this.props.theme.buttonTheme}`}>
-                Edit Apart Info
-              </Button>
-            </div>
-            <StyledCard border="success">
-              <Card.Body>
-                <Card.Title>
-                  <h1>Unit #{apart.apartId}</h1>
-                </Card.Title>
-                <ListGroup variant="flush">
-                  <ListGroup.Item>
-                    <span>Address</span>
-                    <span>{apart.address.street}, Apt {apart.address.apt}, {apart.address.city}, {apart.address.state} {apart.address.zipcode}</span>
-                  </ListGroup.Item>
-                  <ListGroup.Item>
-                    <span>Floor Plan</span>
-                    <span>{apart.floorPlan.name} / {apart.floorPlan.roomCount} room(s) / {apart.floorPlan.sqft} sqft.</span>
-                  </ListGroup.Item>
-                  <ListGroup.Item>
-                    <span>Rent Price</span>
-                    <span>${apart.rentPrice}</span>
-                  </ListGroup.Item>
-                  <ListGroup.Item>
-                    <span>Current Residents</span>
-                    <span>
-                      {apart.residents.map((resident, i) =>
-                        <span key={i}>{resident.name}</span>
-                      )}
-                    </span>
-                  </ListGroup.Item>
-                </ListGroup>
-              </Card.Body>
-            </StyledCard>
-
-            {this.state.residents.map((resident, i) =>
-              <StyledCard border="success" key={i}>
-                <Card.Body>
-                  <Card.Title>
-                    {(i === 0) && <Badge id="badge" variant="primary">primary</Badge>}
-                    <h1 className="resident-name">{resident.firstName} {resident.lastName}</h1>
-                  </Card.Title>
-                  <ListGroup variant="flush">
-                    <ListGroup.Item>
-                      <span>Email</span>
-                      <span>{resident.email}</span>
-                    </ListGroup.Item>
-                  </ListGroup>
-                </Card.Body>
-              </StyledCard>
-            )}
-          </StyledExpandedForm>
+          <UnitInfo
+            props={this.state}
+            apartRef={this.apartRef}
+            theme={this.props.theme}
+          />
         }
 
       </StyledContainer >
