@@ -37,6 +37,17 @@ const RecipientsContainer = styled.div`
   border-radius: 4px;
   padding: 10px;
   margin-bottom: 1em;
+  .badge {
+    padding: 6px 10px;
+    margin: 3px;
+  }
+`
+
+const BadgeCloseButton = styled(Button)`
+  font-size: 10px;
+  padding: 0 3px;
+  margin: 0 -4px 0 5px;
+  border: 1px solid white;
 `
 
 export class Announcement extends Component {
@@ -69,17 +80,70 @@ export class Announcement extends Component {
     this.setState({ recipient: e })
   }
 
+  handleRecipientBadgeClose = (i) => {
+    console.log(i)
+    this.setState(prevState => ({
+      recipients: prevState.recipients.filter((recipient, j) =>
+        j !== i
+      )
+    }))
+  }
+
   handleRecipientSubmit = (e) => {
     e.preventDefault()
-    console.log(this.state.recipientDetail)
     this.setState(prevState => ({
       recipients: [...prevState.recipients, prevState.recipientDetail],
       recipientDetail: ""
     }))
   }
 
-  render() {
+  handleAnnouncementSubmit = async (e) => {
+    e.preventDefault()
 
+    this.setState({ isLoading: true })
+
+    // 1. If "All", get aparts list from server 
+    //    > save ids in recipients array
+
+    // 2. If "Building/Unit", do nothing because they are already saved in recipients array
+
+    // 3. If "Pet Owner", get aparts list and filter by pet from server 
+    //    > save ids in recipients array
+
+    try {
+      switch (this.state.recipient) {
+        case "All":
+          const result = await API.get('apt', '/aparts/list/')
+          console.log(result)
+          // this.setState({
+          //   recipients: result.map(item => item.apartId)
+          // })
+          break;
+        case "Pet Owners":
+          console.log("get aparts list and filter by pet from server > save ids in recipients array")
+          break;
+        default:
+          break;
+      }
+    } catch (e) {
+      console.log(e, e.response)
+    }
+
+
+
+    // Loop recipients array and update announcement for each recipient
+    this.state.recipients.map((recipient, i) => {
+      try {
+        // await API.get('apt', '/')
+      } catch (e) {
+
+      }
+    })
+
+    this.setState({ isLoading: false })
+  }
+
+  render() {
     return (
       <StyledContainer>
         <h1>Make Announcement</h1>
@@ -131,29 +195,34 @@ export class Announcement extends Component {
           </Row>
         </Form>
 
-        <RecipientsContainer>
-          <Badge>0402</Badge>
-          <Badge>2303</Badge>
-          <Badge>0402</Badge>
-          <Badge>2303</Badge>
-          <Badge>0402</Badge>
-          <Badge>2303</Badge>
-          <Badge>0402</Badge>
-          <Badge>2303</Badge>
-          <Badge>0402</Badge>
-          <Badge>2303</Badge>
-          <Badge>0402</Badge>
-          <Badge>2303</Badge>
-        </RecipientsContainer>
+        {this.state.recipients.length
+          ? <RecipientsContainer>
+            {this.state.recipients.map((recipient, i) =>
+              <Badge key={i}
+                variant={`${this.props.theme.buttonTheme}`}>
+                {recipient}
+                <BadgeCloseButton
+                  variant={`${this.props.theme.buttonTheme}`}
+                  onClick={() => this.handleRecipientBadgeClose(i)}
+                >X</BadgeCloseButton>
+              </Badge>
+            )}
+          </RecipientsContainer>
+          : null
+        }
 
 
 
         {/*==================================================
           Write Announcement
         ===================================================*/}
-        <Form>
-          <Form.Group>
-            <Form.Control as="textarea" rows={10}></Form.Control>
+        <Form onSubmit={this.handleAnnouncementSubmit}>
+          <Form.Group controlId="announcement">
+            <Form.Control
+              as="textarea" rows={10}
+              onChange={this.handleChange}
+              value={this.state.announcement}>
+            </Form.Control>
           </Form.Group>
 
           <Form.Group>
