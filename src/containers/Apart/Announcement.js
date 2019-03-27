@@ -77,7 +77,10 @@ export class Announcement extends Component {
   }
 
   handleDropdownChange = (e) => {
-    this.setState({ recipient: e })
+    this.setState({
+      recipient: e,
+      recipientDetail: (e !== "Building/Unit") ? e : ""
+    })
   }
 
   handleRecipientBadgeClose = (i) => {
@@ -110,36 +113,33 @@ export class Announcement extends Component {
     // 3. If "Pet Owner", get aparts list and filter by pet from server 
     //    > save ids in recipients array
 
-    try {
-      switch (this.state.recipient) {
-        case "All":
-          const result = await API.get('apt', '/aparts/list/')
-          console.log(result)
-          // this.setState({
-          //   recipients: result.map(item => item.apartId)
-          // })
-          break;
-        case "Pet Owners":
-          console.log("get aparts list and filter by pet from server > save ids in recipients array")
-          break;
-        default:
-          break;
-      }
-    } catch (e) {
-      console.log(e, e.response)
-    }
-
-
 
     // Loop recipients array and update announcement for each recipient
-    this.state.recipients.map((recipient, i) => {
+    this.state.recipients.map(async (recipient, i) => {
       try {
-        // await API.get('apt', '/')
+        let result = ""
+        switch (recipient) {
+          case "All":
+            result = await API.get('apt', '/aparts/list')
+            result.Items.map(item => {
+              console.log("All:", item.apartId)
+            })
+            break
+          case "Pet Owners":
+            result = await API.get('apt', '/aparts/list?isPet=true')
+            result.Items.map(item => {
+              console.log("Pet Owner:", item.apartId)
+            })
+            break
+          default: // Building/Unit
+            console.log("Building/Unit", recipient)
+            break
+        }
+        console.log("update announcement")
       } catch (e) {
-
+        console.log(e, e.response)
       }
     })
-
     this.setState({ isLoading: false })
   }
 
@@ -187,8 +187,8 @@ export class Announcement extends Component {
                 className="btn-add-recipient"
                 block
                 type="submit"
-                variant={`outline-${this.props.theme.buttonTheme}`}
-                disabled={(this.state.recipient !== "Building/Unit")}>
+                // disabled={(this.state.recipient !== "Building/Unit")}
+                variant={`outline-${this.props.theme.buttonTheme}`}>
                 Add
               </Button>
             </Col>
