@@ -21,6 +21,8 @@ import styled from 'styled-components'
 import { Container, Row, Col, Form, Dropdown, Button, Badge } from "react-bootstrap";
 import LoaderButton from '../../components/LoaderButton'
 import { API } from 'aws-amplify'
+import AlertModal from '../../components/AlertModal'
+
 
 const StyledContainer = styled(Container)`
   margin-top: 3em;
@@ -59,6 +61,8 @@ export class Announcement extends Component {
       recipientDetail: "",
       announcement: "",
       isLoading: false,
+      modalShow: false,
+      modalMessage: "",
     }
   }
 
@@ -83,6 +87,10 @@ export class Announcement extends Component {
     })
   }
 
+  handleModalClose = () => {
+    this.setState({ modalShow: false })
+  }
+
   handleRecipientBadgeClose = (i) => {
     console.log(i)
     this.setState(prevState => ({
@@ -103,6 +111,18 @@ export class Announcement extends Component {
   handleAnnouncementSubmit = async (e) => {
     e.preventDefault()
 
+    if (!this.state.recipients.length) {
+      const msg = "<div>Please add recipients by one of followings<ul>" +
+        "<li>Dropdown > Select Building/Unit > Enter Building number of Unit number > Press 'Add' button</li>" +
+        "<li>Dropdown > Select All or other conditions > Press 'Add' button</li>" +
+        "</ul></div>"
+      this.setState({
+        modalShow: true,
+        modalMessage: msg
+      })
+      return
+    }
+
     this.setState({ isLoading: true })
 
     // 1. If "All", get aparts list from server 
@@ -115,33 +135,89 @@ export class Announcement extends Component {
 
 
     // Loop recipients array and update announcement for each recipient
-    this.state.recipients.map(async (recipient, i) => {
+    const done = this.state.recipients.map(async (recipient, i) => {
       try {
-        let result = ""
         switch (recipient) {
           case "All":
-            result = await API.get('apt', '/aparts/list')
-            result.Items.map(item => {
-              console.log("All:", item.apartId)
-            })
+            await this.getFilteredListAndUpdate('All', '/aparts/list')
             break
           case "Pet Owners":
-            result = await API.get('apt', '/aparts/list?isPet=true')
-            result.Items.map(item => {
-              console.log("Pet Owner:", item.apartId)
-            })
+            await this.getFilteredListAndUpdate('Pet Owners', '/aparts/list?isPet=true')
             break
-          default: // Building/Unit
-            console.log("Building/Unit", recipient)
+          default:
+            await this.getUnitListAndUpdate(recipient)
             break
         }
-        console.log("update announcement")
       } catch (e) {
         console.log(e, e.response)
       }
     })
-    this.setState({ isLoading: false })
+    Promise.all(done).then(() => {
+      const msg = "Successfully announced." +
+        "Any remaining recipients are invalid building/unit numbers."
+      this.setState({
+        isLoading: false,
+        modalShow: true,
+        modalMessage: msg
+      })
+    })
   }
+
+  getFilteredListAndUpdate = async (condition, apiPath) => {
+    const result = await API.get('apt', apiPath)
+    result.Items.map(async item => {
+      console.log(condition, item.apartId)
+      await this.updateAnnouncement(item.apartId)
+        && this.setState(prevState => ({
+          recipients: prevState.recipients.filter(recipient =>
+            recipient !== condition)
+        }))
+    })
+  }
+
+  getUnitListAndUpdate = async (recipient) => {
+    console.log("Building/Unit", recipient)
+    const units = await this.getUnitList(recipient)
+    const done = units.length && units.map(async unit => {
+      await this.updateAnnouncement(unit.apartId)
+    })
+    Promise.all(done).then(() => {
+      this.setState(prevState => ({
+        recipients: prevState.recipients.filter(stateRecipient =>
+          stateRecipient !== recipient)
+      }))
+    })
+  }
+
+  getUnitList = async (apartId) => {
+    try {
+      const apart = await API.get('apt', `/aparts/list/${apartId}`)
+      if (!apart.Items.length) throw new Error(`${apartId} is invalid unit number.`)
+      return apart.Items
+    } catch (e) {
+      console.log(e, e.response)
+      return false
+    }
+  }
+
+  updateAnnouncement = async (apartId) => {
+    try {
+      await API.put('apt', `/aparts/${apartId}`, {
+        body: {
+          announcement: this.state.announcement
+        }
+      })
+      this.setState(prevState => ({
+        recipients: prevState.recipients.filter(recipient =>
+          recipient !== apartId)
+      }))
+      return true
+    } catch (e) {
+      console.log(e, e.response)
+      return false
+    }
+  }
+
 
   render() {
     return (
@@ -173,7 +249,7 @@ export class Announcement extends Component {
             <Col sm={6}>
               <Form.Group controlId="recipientDetail">
                 <Form.Control
-                  placeholder="Building/Unit number"
+                  placeholder={`${this.state.recipient}`}
                   type="text"
                   disabled={(this.state.recipient !== "Building/Unit")}
                   onChange={(e) => this.validateNumber(e) && this.handleChange(e)}
@@ -187,7 +263,7 @@ export class Announcement extends Component {
                 className="btn-add-recipient"
                 block
                 type="submit"
-                // disabled={(this.state.recipient !== "Building/Unit")}
+                disabled={this.state.recipient === "To Whom.."}
                 variant={`outline-${this.props.theme.buttonTheme}`}>
                 Add
               </Button>
@@ -237,6 +313,13 @@ export class Announcement extends Component {
             />
           </Form.Group>
         </Form>
+
+        <AlertModal
+          modalShow={this.state.modalShow}
+          modalClose={this.handleModalClose}
+          modalMessage={this.state.modalMessage}
+          theme={this.props.theme}
+        />
       </StyledContainer >
     )
   }
