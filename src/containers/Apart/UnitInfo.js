@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { Fragment } from 'react'
 import styled from 'styled-components'
 import { Form, Card, ListGroup, Button, Badge, Row, Col } from "react-bootstrap";
 import moment from 'moment'
@@ -25,7 +25,7 @@ const StyledCard = styled(Card)`
     }
   }
   .badge {
-    width: 90px;
+    width: 100px;
     padding: 5px;
   }
 
@@ -95,24 +95,35 @@ const UnitInfo = ({ props, ...rest }) => {
                 </Col>
               </Row>
             </ListGroup.Item>
-            <ListGroup.Item>
-              <Row>
-                <Col>Move In Date</Col>
-                <Col>{moment(props.residents[0].moveInDate).format('L')}</Col>
-              </Row>
-            </ListGroup.Item>
-            <ListGroup.Item>
-              <Row>
-                <Col>Lease From Date</Col>
-                <Col>{moment(props.residents[0].leaseStartDate).format('L')}</Col>
-              </Row>
-            </ListGroup.Item>
-            <ListGroup.Item>
-              <Row>
-                <Col>Lease To Date</Col>
-                <Col>{moment(props.residents[0].leaseEndDate).format('L')}</Col>
-              </Row>
-            </ListGroup.Item>
+            {props.residents.length ?
+              <Fragment>
+                <ListGroup.Item>
+                  <Row>
+                    <Col>Move In Date</Col>
+                    <Col>{moment(props.residents[0].moveInDate).format('L')}</Col>
+                  </Row>
+                </ListGroup.Item>
+                <ListGroup.Item>
+                  <Row>
+                    <Col>Lease From Date</Col>
+                    <Col>{moment(props.residents[0].leaseStartDate).format('L')}</Col>
+                  </Row>
+                </ListGroup.Item>
+                <ListGroup.Item>
+                  <Row>
+                    <Col>Lease To Date</Col>
+                    <Col>{moment(props.residents[0].leaseEndDate).format('L')}</Col>
+                  </Row>
+                </ListGroup.Item>
+                <ListGroup.Item>
+                  <Row>
+                    <Col>Has Pet</Col>
+                    <Col>{props.residents.filter(resident =>
+                      resident.isPet === true).length
+                      ? "Yes" : "No"}</Col>
+                  </Row>
+                </ListGroup.Item>
+              </Fragment> : null}
           </ListGroup>
         </Card.Body>
       </StyledCard>
@@ -142,7 +153,7 @@ const UnitInfo = ({ props, ...rest }) => {
                 <Row>
                   <Col sm={4}>Phone</Col>
                   <Col sm={8} className="badge-container">
-                    <span>{formatPhoneNumber(resident.phone)}</span>
+                    <span>{resident.phone && formatPhoneNumber(resident.phone)}</span>
                     <span>
                       {resident.notifications.isVoiceCallSub
                         ? <Badge variant="success">call sub: yes</Badge>
@@ -172,7 +183,8 @@ const UnitInfo = ({ props, ...rest }) => {
                   <Col sm={4}>Emergency Contact</Col>
                   <Col sm={8}>
                     <div>{resident.erContact.firstName} {resident.erContact.lastName}</div>
-                    <div>{formatPhoneNumber(resident.erContact.phone)}</div>
+                    <div>{resident.erContact.phone &&
+                      formatPhoneNumber(resident.erContact.phone)}</div>
                   </Col>
                 </Row>
               </ListGroup.Item>

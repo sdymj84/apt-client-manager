@@ -60,7 +60,7 @@ export class ApartInfo extends Component {
     this.apartRef = React.createRef()
     this.unitSearchRef = React.createRef()
     this.state = {
-      apartId: "0402",
+      apartId: "",
       isLoading: false,
       isExpanded: false,
       residents: [],

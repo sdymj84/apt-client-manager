@@ -59,6 +59,7 @@ export class New extends Component {
     this.profileRef = React.createRef()
     this.unitSearchRef = React.createRef()
     this.state = {
+      apt: "",
       modalShow: false,
       modalActive: 0, // 1: expand?, 2: submitted add more?
       modalMessage: "",
@@ -236,7 +237,8 @@ export class New extends Component {
         isLoading: false,
         modalMessage: msg,
         modalActive: 1,
-        modalShow: true
+        modalShow: true,
+        apt
       })
     } catch (e) {
       alert(e.message)
@@ -308,11 +310,13 @@ export class New extends Component {
 
   updateResidentInUnit = async () => {
     try {
+      console.log(this.state)
       await API.put('apt',
         `/aparts/${this.state.apartId}/add`, {
           body: {
             residentId: this.state.residentId,
-            name: this.state.firstName + " " + this.state.lastName
+            name: this.state.firstName + " " + this.state.lastName,
+            isPet: this.state.apt.isPet || this.state.isPet
           }
         })
       console.log("Resident is successfully added to the unit")
