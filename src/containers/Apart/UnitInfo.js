@@ -2,12 +2,13 @@ import React, { Fragment } from 'react'
 import styled from 'styled-components'
 import { Form, Card, ListGroup, Button, Badge, Row, Col } from "react-bootstrap";
 import moment from 'moment'
+import LoaderButton from '../../components/LoaderButton';
 
 
 const StyledExpandedForm = styled(Form)`
   margin-top: 2em;
   width: 100%;
-  button {
+  .btn-edit-apart {
     margin: 1em 0;
   }
 `
@@ -38,10 +39,23 @@ const StyledCard = styled(Card)`
   .list-group-item:first-child {
     border-top: 2px solid #005916;
   }
+
+  .btn-delete-resident {
+    margin: 0;
+  }
+
+  .card-footer {
+    text-align: right;
+    background-color: #eff7f5;
+  }
+
+  .row {
+    align-items: center;
+  }
 `
 
-const UnitInfo = ({ props, ...rest }) => {
-  const { apart } = props
+const UnitInfo = ({ state, ...rest }) => {
+  const { apart } = state
 
   const formatPhoneNumber = phoneNumberString => {
     var cleaned = (phoneNumberString).replace(/\D/g, '')
@@ -57,9 +71,11 @@ const UnitInfo = ({ props, ...rest }) => {
       <h1 ref={rest.apartRef}>Apart Info</h1>
       <hr />
       <div className="btn-container">
-        <Button variant={`outline-${rest.theme.buttonTheme}`}>
+        <Button
+          className="btn-edit-apart"
+          variant={`outline-${rest.theme.buttonTheme}`}>
           Edit Apart Info
-              </Button>
+        </Button>
       </div>
       <StyledCard border="success">
         <Card.Body>
@@ -95,30 +111,30 @@ const UnitInfo = ({ props, ...rest }) => {
                 </Col>
               </Row>
             </ListGroup.Item>
-            {props.residents.length ?
+            {state.residents.length ?
               <Fragment>
                 <ListGroup.Item>
                   <Row>
                     <Col>Move In Date</Col>
-                    <Col>{moment(props.residents[0].moveInDate).format('L')}</Col>
+                    <Col>{moment(state.residents[0].moveInDate).format('L')}</Col>
                   </Row>
                 </ListGroup.Item>
                 <ListGroup.Item>
                   <Row>
                     <Col>Lease From Date</Col>
-                    <Col>{moment(props.residents[0].leaseStartDate).format('L')}</Col>
+                    <Col>{moment(state.residents[0].leaseStartDate).format('L')}</Col>
                   </Row>
                 </ListGroup.Item>
                 <ListGroup.Item>
                   <Row>
                     <Col>Lease To Date</Col>
-                    <Col>{moment(props.residents[0].leaseEndDate).format('L')}</Col>
+                    <Col>{moment(state.residents[0].leaseEndDate).format('L')}</Col>
                   </Row>
                 </ListGroup.Item>
                 <ListGroup.Item>
                   <Row>
                     <Col>Has Pet</Col>
-                    <Col>{props.residents.filter(resident =>
+                    <Col>{state.residents.filter(resident =>
                       resident.isPet === true).length
                       ? "Yes" : "No"}</Col>
                   </Row>
@@ -128,12 +144,17 @@ const UnitInfo = ({ props, ...rest }) => {
         </Card.Body>
       </StyledCard>
 
-      {props.residents.map((resident, i) =>
+
+      {/*========================================
+          Resident List
+      =========================================*/}
+      {state.residents.map((resident, i) =>
         <StyledCard border="success" key={i}>
           <Card.Body>
             <Card.Title className="badge-container">
               <h1 className="resident-name">{resident.firstName} {resident.lastName}</h1>
-              <span>{(i === 0) && <Badge variant="primary">primary</Badge>}</span>
+              <span>{(i === 0) && <Badge variant="primary">primary</Badge>}
+              </span>
             </Card.Title>
             <ListGroup variant="flush">
               <ListGroup.Item>
@@ -188,9 +209,19 @@ const UnitInfo = ({ props, ...rest }) => {
                   </Col>
                 </Row>
               </ListGroup.Item>
-
             </ListGroup>
           </Card.Body>
+          <Card.Footer>
+            <LoaderButton
+              className="btn-delete-resident"
+              variant="outline-danger"
+              margin="0"
+              isLoading={rest.isLoading}
+              text="DELETE"
+              loadingText="DELETING.."
+              onClick={() => rest.handleDeleteClick(i)}>
+            </LoaderButton>
+          </Card.Footer>
         </StyledCard>
       )}
     </StyledExpandedForm>

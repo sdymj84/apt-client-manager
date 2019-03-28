@@ -359,14 +359,6 @@ export class New extends Component {
     Render
   ===============================================================*/
   render() {
-    const modalProps = {
-      modalShow: this.state.modalShow,
-      modalMessage: this.state.modalMessage,
-      handleModalYes: this.handleModalYes,
-      handleModalNo: this.handleModalNo,
-      theme: this.props.theme
-    }
-
     return (
       <StyledContainer>
         <Form className="unit-search">
@@ -576,7 +568,12 @@ export class New extends Component {
           </StyledExpandedForm>
         }
 
-        <ConfirmModal modalProps={modalProps} />
+        <ConfirmModal
+          modalShow={this.state.modalShow}
+          modalMessage={this.state.modalMessage}
+          handleModalYes={this.handleModalYes}
+          handleModalNo={this.handleModalNo}
+          theme={this.props.theme} />
 
       </StyledContainer>
     )

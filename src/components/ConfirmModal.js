@@ -6,20 +6,19 @@ const StyledModal = styled(Modal)`
   font-size: 1.2em;
 `
 
-const ConfirmModal = ({ modalProps }) => {
-  const mp = modalProps
+const ConfirmModal = (props) => {
   return (
-    <StyledModal show={mp.modalShow}>
+    <StyledModal show={props.modalShow}>
       <Modal.Body
-        dangerouslySetInnerHTML={{ __html: mp.modalMessage }}
+        dangerouslySetInnerHTML={{ __html: props.modalMessage }}
       ></Modal.Body>
       <Modal.Footer>
-        <Button variant={`outline-${mp.theme.buttonTheme}`}
-          onClick={mp.handleModalNo}>
+        <Button variant={`outline-${props.theme.buttonTheme}`}
+          onClick={props.handleModalNo}>
           NO
             </Button>
-        <Button variant={`${mp.theme.buttonTheme}`}
-          onClick={mp.handleModalYes}>
+        <Button variant={`${props.theme.buttonTheme}`}
+          onClick={props.handleModalYes}>
           YES
             </Button>
       </Modal.Footer>

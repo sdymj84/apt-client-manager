@@ -15,6 +15,7 @@ import { Container, Image, Row, Col, Form } from "react-bootstrap";
 import LoaderButton from '../../components/LoaderButton'
 import { API } from 'aws-amplify'
 import UnitInfo from './UnitInfo'
+import ConfirmModal from '../../components/ConfirmModal'
 
 
 const StyledContainer = styled(Container)`
@@ -60,11 +61,15 @@ export class ApartInfo extends Component {
     this.apartRef = React.createRef()
     this.unitSearchRef = React.createRef()
     this.state = {
-      apartId: "",
+      apartId: "0402",
       isLoading: false,
+      isDeleting: false,
       isExpanded: false,
       residents: [],
       apart: "",
+      modalShow: false,
+      modalMessage: "",
+      indexToDelete: "",
     }
   }
 
@@ -138,6 +143,36 @@ export class ApartInfo extends Component {
     }
   }
 
+  handleDeleteClick = (i) => {
+    this.setState({
+      modalShow: true,
+      modalMessage: "Are you sure to delete this resident?",
+      indexToDelete: i
+    })
+  }
+
+  handleModalNo = () => {
+    this.setState({ modalShow: false })
+  }
+
+  // TODO: handleModalYes
+  handleModalYes = () => {
+    this.setState({
+      modalShow: false,
+      isLoading: true
+    })
+
+    // 1. Remove the resident from unit's residents list by
+    //  removeResidentInApart - aparts/{aid}/remove
+
+
+    // 2. Update or remove apartId from Resident DB by
+    //  updateResident - residents/{id}
+
+
+    this.setState({ isLoading: false })
+  }
+
   render() {
     const { apart } = this.state
     return (
@@ -180,11 +215,19 @@ export class ApartInfo extends Component {
 
         {this.state.isExpanded && apart &&
           <UnitInfo
-            props={this.state}
+            state={this.state}
+            handleDeleteClick={this.handleDeleteClick}
             apartRef={this.apartRef}
             theme={this.props.theme}
           />
         }
+
+        <ConfirmModal
+          modalShow={this.state.modalShow}
+          modalMessage={this.state.modalMessage}
+          handleModalYes={this.handleModalYes}
+          handleModalNo={this.handleModalNo}
+          theme={this.props.theme} />
 
       </StyledContainer >
     )
