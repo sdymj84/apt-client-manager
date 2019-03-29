@@ -66,6 +66,8 @@ const UnitInfo = ({ state, ...rest }) => {
     return null
   }
 
+  console.log(state)
+
   return (
     <StyledExpandedForm>
       <h1 ref={rest.apartRef}>Apart Info</h1>
@@ -216,7 +218,7 @@ const UnitInfo = ({ state, ...rest }) => {
               className="btn-delete-resident"
               variant="outline-danger"
               margin="0"
-              isLoading={rest.isLoading}
+              isLoading={state.isDeleting[i]}
               text="DELETE"
               loadingText="DELETING.."
               onClick={() => rest.handleDeleteClick(i)}>

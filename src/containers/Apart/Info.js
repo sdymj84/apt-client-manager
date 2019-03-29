@@ -63,7 +63,7 @@ export class ApartInfo extends Component {
     this.state = {
       apartId: "0402",
       isLoading: false,
-      isDeleting: false,
+      isDeleting: [],
       isExpanded: false,
       residents: [],
       apart: "",
@@ -101,12 +101,68 @@ export class ApartInfo extends Component {
 
   handleCheckClick = async (e) => {
     e.preventDefault()
+    this.getApartInfo("check")
+  }
+
+  handleDeleteClick = (i) => {
+    this.setState({
+      modalShow: true,
+      modalMessage: "Are you sure to delete this resident?",
+      indexToDelete: i
+    })
+  }
+
+  handleModalNo = () => {
+    this.setState({ modalShow: false })
+  }
+
+  // TODO: handleModalYes - No 2
+  handleModalYes = async () => {
+    this.setState(prevState => {
+      const isDeleting = prevState.isDeleting
+      isDeleting[prevState.indexToDelete] = true
+      return {
+        modalShow: false,
+        isDeleting
+      }
+    })
+
+    const { apartId, residentId } = this.state.residents[this.state.indexToDelete]
+
+    /* 1. Remove the resident from unit's residents list by
+     removeResidentInApart - aparts/{aid}/remove
+    2. Update or remove apartId from Resident DB by
+     updateResident - residents/{id} */
+    try {
+      await API.put('apt', `/aparts/${apartId}/remove/${residentId}`)
+      this.getApartInfo("delete")
+      // await API.put('apt', `/residents/${residentId}`, {
+      //   body: {
+      //     apartId: null
+      //   }
+      // })
+
+    } catch (e) {
+      console.log(e, e.response)
+    }
+
+    this.setState(prevState => ({
+      isDeleting: prevState.isDeleting.map(isDel => false)
+    }))
+
+  }
+
+  getApartInfo = async (action) => {
     this.setState({ isLoading: true })
     try {
       const apart = await API.get('apt', `/aparts/${this.state.apartId}`)
       if (!apart) throw new Error("You entered invalid unit number")
       const residents = apart.residents.map(async resident => {
-        return await API.get('apt', `/residents/${resident.id}`)
+        const result = await API.get('apt', `/residents/${resident.id}`)
+        this.setState(prevState => ({
+          isDeleting: [...prevState.isDeleting, false]
+        }))
+        return result
       })
       Promise.all(residents).then((residents) => {
         let primaryIndex = 0
@@ -127,7 +183,8 @@ export class ApartInfo extends Component {
           residents,
           apart
         })
-        window.scrollTo({
+
+        action === "check" && window.scrollTo({
           top: this.apartRef.current.offsetTop,
           left: 0,
           behavior: 'smooth'
@@ -143,38 +200,9 @@ export class ApartInfo extends Component {
     }
   }
 
-  handleDeleteClick = (i) => {
-    this.setState({
-      modalShow: true,
-      modalMessage: "Are you sure to delete this resident?",
-      indexToDelete: i
-    })
-  }
-
-  handleModalNo = () => {
-    this.setState({ modalShow: false })
-  }
-
-  // TODO: handleModalYes
-  handleModalYes = () => {
-    this.setState({
-      modalShow: false,
-      isLoading: true
-    })
-
-    // 1. Remove the resident from unit's residents list by
-    //  removeResidentInApart - aparts/{aid}/remove
-
-
-    // 2. Update or remove apartId from Resident DB by
-    //  updateResident - residents/{id}
-
-
-    this.setState({ isLoading: false })
-  }
-
   render() {
     const { apart } = this.state
+    console.log(this.state)
     return (
       <StyledContainer >
         <StyledApartList>
