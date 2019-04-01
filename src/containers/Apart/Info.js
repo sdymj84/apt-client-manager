@@ -13,7 +13,7 @@ import React, { Component } from 'react'
 import styled from 'styled-components'
 import { Container, Image, Row, Col, Form } from "react-bootstrap";
 import LoaderButton from '../../components/LoaderButton'
-import { API } from 'aws-amplify'
+import { API, Auth } from 'aws-amplify'
 import UnitInfo from './UnitInfo'
 import ConfirmModal from '../../components/ConfirmModal'
 
@@ -116,7 +116,7 @@ export class ApartInfo extends Component {
     this.setState({ modalShow: false })
   }
 
-  // TODO: handleModalYes - No 2
+  // TODO: handleModalYes - Test No 2 and modify
   handleModalYes = async () => {
     this.setState(prevState => {
       const isDeleting = prevState.isDeleting
@@ -131,15 +131,19 @@ export class ApartInfo extends Component {
 
     /* 1. Remove the resident from unit's residents list by
      removeResidentInApart - aparts/{aid}/remove
-    2. Update or remove apartId from Resident DB by
+    2. Delete resident from DB and UserPool
+    
+    OR: Update or remove apartId from Resident DB by
      updateResident - residents/{id} */
     try {
       await API.put('apt', `/aparts/${apartId}/remove/${residentId}`)
       this.getApartInfo("delete")
+      await API.del('apt', `/residents/${residentId}`)
+      const user = await Auth.currentAuthenticatedUser()
+      user.deleteUser()
+
       // await API.put('apt', `/residents/${residentId}`, {
-      //   body: {
-      //     apartId: null
-      //   }
+      //   body: {partId: ""}
       // })
 
     } catch (e) {
@@ -152,6 +156,7 @@ export class ApartInfo extends Component {
 
   }
 
+  // show or refresh user info (expanded cards)
   getApartInfo = async (action) => {
     this.setState({ isLoading: true })
     try {

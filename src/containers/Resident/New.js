@@ -141,13 +141,14 @@ export class New extends Component {
         this.initializeForm()
         break;
       default:
-        window.scrollTo({
-          top: this.profileRef.current.offsetTop,
-          left: 0,
-          behavior: 'smooth'
-        })
         break;
     }
+
+    this.profileRef.current && window.scrollTo({
+      top: this.profileRef.current.offsetTop,
+      left: 0,
+      behavior: 'smooth'
+    })
   }
 
   handleChange = (e) => {
