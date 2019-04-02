@@ -1,8 +1,8 @@
 import React from 'react'
 import { Route } from "react-router-dom";
 
-const AppliedRoutes = ({ component: C, props: childProps, ...rest }) => {
+const AppliedRoute = ({ component: C, props: childProps, ...rest }) => {
   return <Route {...rest} render={props => <C {...props} {...childProps} />} />
 }
 
-export default AppliedRoutes
+export default AppliedRoute
