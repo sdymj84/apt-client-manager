@@ -66,8 +66,6 @@ const UnitInfo = ({ state, ...rest }) => {
     return null
   }
 
-  console.log(state)
-
   return (
     <StyledExpandedForm>
       <h1 ref={rest.apartRef}>Apart Info</h1>

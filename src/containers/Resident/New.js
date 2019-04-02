@@ -24,6 +24,7 @@ import Amplify, { API, Auth } from 'aws-amplify'
 import LoaderButton from '../../components/LoaderButton'
 import { resident, manager } from '../../aws-export'
 import ConfirmModal from '../../components/ConfirmModal'
+import AlertModal from '../../components/AlertModal'
 
 
 /*===============================================================
@@ -61,6 +62,7 @@ export class New extends Component {
     this.state = {
       apt: "",
       modalShow: false,
+      modalAlertShow: false,
       modalActive: 0, // 1: expand?, 2: submitted add more?
       modalMessage: "",
       residentId: "",
@@ -149,6 +151,10 @@ export class New extends Component {
       left: 0,
       behavior: 'smooth'
     })
+  }
+
+  handleModalAlertClose = () => {
+    this.setState({ modalAlertShow: false })
   }
 
   handleChange = (e) => {
@@ -262,16 +268,39 @@ export class New extends Component {
     }
 
     try {
-      const residentId = await this.residentSignUp(credentials)
-      await this.setState({ residentId, regiNum })
-      await this.createResidentDB()
-      await this.updateResidentInUnit()
-      this.setState({
-        modalMessage: "Resident is successfully added.\nWould you like to add more resident in this unit?",
-        modalActive: 2,
-        modalShow: true,
-        isLoading: false
-      })
+      const resident = await this.residentSignUp(credentials)
+      const { status, id, userInfo } = resident
+      switch (status) {
+        case "current":
+          this.setState({
+            modalMessage: `<div>This person is current resident in Apt ${userInfo.apartId}</div>`
+              + `<div>Please follow below instruction if the resident is trying to move in the same apartment</div>`
+              + `<ul><li>Main menu > Apartment</li><li>Enter ${userInfo.apartId}</li>`
+              + `<li>Find the resident and click "Move"</li></ul>`,
+            modalAlertShow: true,
+            isLoading: false
+          })
+          break;
+
+        case "new":
+          await this.setState({
+            residentId: id,
+            regiNum
+          })
+          await this.createResidentDB()
+          await this.updateResidentInUnit()
+          this.setState({
+            modalMessage: "Resident is successfully added.\nWould you like to add more resident in this unit?",
+            modalActive: 2,
+            modalShow: true,
+            isLoading: false
+          })
+          break;
+
+        default:
+          break;
+      }
+
       // No -> go to main page
       // Yes -> expand true, state initialize
     } catch (e) {
@@ -289,17 +318,42 @@ export class New extends Component {
       Amplify.configure(resident)
       const newResident = await Auth.signUp(credentials)
       Amplify.configure(manager)
-
-      console.log(newResident)
-      return newResident.userSub
+      return {
+        status: "new", // User pool: X
+        id: newResident.userSub,
+        userInfo: newResident
+      }
     } catch (e) {
-      console.log("Error while signing in : ", e, e.response)
+      if (e.code === "UsernameExistsException") {
+        const info = await this.getResidentInfoByEmail(credentials.username)
+        if (info) {
+          Amplify.configure(manager)
+          return {
+            status: "current", // User pool: O / DB: O
+            id: null,
+            userInfo: info
+          }
+        }
+      } else {
+        console.log("Error while signing in : ", e, e.response)
+      }
+    }
+  }
+
+  getResidentInfoByEmail = async (email) => {
+    try {
+      const user = await API.get('apt', `/residents/email/${email}`)
+      return user
+    } catch (e) {
+      if (e.response.data.error === "Item not found.") {
+        return false
+      }
+      console.log(e, e.response)
     }
   }
 
   createResidentDB = async () => {
     try {
-      console.log(this.state)
       await API.post('apt', '/residents', {
         body: this.state
       })
@@ -311,7 +365,6 @@ export class New extends Component {
 
   updateResidentInUnit = async () => {
     try {
-      console.log(this.state)
       await API.put('apt',
         `/aparts/${this.state.apartId}/add`, {
           body: {
@@ -574,6 +627,11 @@ export class New extends Component {
           modalMessage={this.state.modalMessage}
           handleModalYes={this.handleModalYes}
           handleModalNo={this.handleModalNo}
+          theme={this.props.theme} />
+        <AlertModal
+          modalShow={this.state.modalAlertShow}
+          modalClose={this.handleModalAlertClose}
+          modalMessage={this.state.modalMessage}
           theme={this.props.theme} />
 
       </StyledContainer>

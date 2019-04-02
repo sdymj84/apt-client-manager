@@ -13,9 +13,10 @@ import React, { Component } from 'react'
 import styled from 'styled-components'
 import { Container, Image, Row, Col, Form } from "react-bootstrap";
 import LoaderButton from '../../components/LoaderButton'
-import { API, Auth } from 'aws-amplify'
+import { API } from 'aws-amplify'
 import UnitInfo from './UnitInfo'
 import ConfirmModal from '../../components/ConfirmModal'
+import AlertModal from '../../components/AlertModal'
 
 
 const StyledContainer = styled(Container)`
@@ -68,6 +69,7 @@ export class ApartInfo extends Component {
       residents: [],
       apart: "",
       modalShow: false,
+      modalAlertShow: false,
       modalMessage: "",
       indexToDelete: "",
     }
@@ -112,6 +114,10 @@ export class ApartInfo extends Component {
     })
   }
 
+  handleModalAlertClose = () => {
+    this.setState({ modalAlertShow: false })
+  }
+
   handleModalNo = () => {
     this.setState({ modalShow: false })
   }
@@ -129,29 +135,24 @@ export class ApartInfo extends Component {
 
     const { apartId, residentId } = this.state.residents[this.state.indexToDelete]
 
-    /* 1. Remove the resident from unit's residents list by
-     removeResidentInApart - aparts/{aid}/remove
-    2. Delete resident from DB and UserPool
-    
-    OR: Update or remove apartId from Resident DB by
-     updateResident - residents/{id} */
     try {
       await API.put('apt', `/aparts/${apartId}/remove/${residentId}`)
       this.getApartInfo("delete")
       await API.del('apt', `/residents/${residentId}`)
-      const user = await Auth.currentAuthenticatedUser()
-      user.deleteUser()
-
-      // await API.put('apt', `/residents/${residentId}`, {
-      //   body: {partId: ""}
-      // })
-
     } catch (e) {
       console.log(e, e.response)
     }
 
+    const deletingUser = this.state.residents[this.state.indexToDelete]
     this.setState(prevState => ({
-      isDeleting: prevState.isDeleting.map(isDel => false)
+      isDeleting: prevState.isDeleting.map(isDel => false),
+      modalAlertShow: true,
+      modalMessage: "<div>The resident has been deleted from database.</div>"
+        + "<div>The system, however, does not support deleting from AWS User Pool.</div>"
+        + "<div>Please go to AWS Cognito UserPool console and manually delete the user.</div>"
+        + `<br/><div>userID: ${deletingUser.residentId}</div>`
+        + `<div>email: ${deletingUser.email}</div>`
+        + "<br/><div>Press OK only after you've deleted the user from UserPool.</div>"
     }))
 
   }
@@ -207,7 +208,6 @@ export class ApartInfo extends Component {
 
   render() {
     const { apart } = this.state
-    console.log(this.state)
     return (
       <StyledContainer >
         <StyledApartList>
@@ -260,6 +260,11 @@ export class ApartInfo extends Component {
           modalMessage={this.state.modalMessage}
           handleModalYes={this.handleModalYes}
           handleModalNo={this.handleModalNo}
+          theme={this.props.theme} />
+        <AlertModal
+          modalShow={this.state.modalAlertShow}
+          modalClose={this.handleModalAlertClose}
+          modalMessage={this.state.modalMessage}
           theme={this.props.theme} />
 
       </StyledContainer >
