@@ -204,7 +204,7 @@ export class Announcement extends Component {
     try {
       await API.put('apt', `/aparts/${apartId}`, {
         body: {
-          announcement: this.state.announcement
+          announcement: this.state.announcement,
         }
       })
       this.setState(prevState => ({

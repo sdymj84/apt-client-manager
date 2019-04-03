@@ -86,7 +86,10 @@ const UnitInfo = ({ state, ...rest }) => {
             <ListGroup.Item>
               <Row>
                 <Col sm={4}>Address</Col>
-                <Col sm={8}>{apart.address.street}, Apt {apart.address.apt}, {apart.address.city}, {apart.address.state} {apart.address.zipcode}</Col>
+                <Col sm={8}>{apart.address.street},
+                  {} Apt {apart.address.apt}, {apart.address.city},
+                  {} {apart.address.state} {apart.address.zipcode}
+                </Col>
               </Row>
             </ListGroup.Item>
             <ListGroup.Item>

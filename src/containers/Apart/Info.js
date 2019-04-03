@@ -122,7 +122,6 @@ export class ApartInfo extends Component {
     this.setState({ modalShow: false })
   }
 
-  // TODO: handleModalYes - Test No 2 and modify
   handleModalYes = async () => {
     this.setState(prevState => {
       const isDeleting = prevState.isDeleting
