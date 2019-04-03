@@ -143,7 +143,7 @@ export class ApartInfo extends Component {
     }
 
     const deletingUser = this.state.residents[this.state.indexToDelete]
-    this.setState(prevState => ({
+    deletingUser && this.setState(prevState => ({
       isDeleting: prevState.isDeleting.map(isDel => false),
       modalAlertShow: true,
       modalMessage: "<div>The resident has been deleted from database.</div>"
