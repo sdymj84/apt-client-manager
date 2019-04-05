@@ -1,3 +1,11 @@
+/* Basic Prop List
+modalShow={this.state.modalShow}
+modalMessage={this.state.modalMessage}
+handleModalYes={this.handleModalYes}
+handleModalNo={this.handleModalNo}
+theme={this.props.theme}
+*/
+
 import React from 'react'
 import { Button, Modal } from "react-bootstrap";
 import styled from 'styled-components'
