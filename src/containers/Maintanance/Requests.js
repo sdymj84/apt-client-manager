@@ -6,6 +6,9 @@ import RequestCard from './RequestCard';
 
 const StyledContainer = styled(Container)`
   margin-top: 2em;
+  .card-columns .card {
+    margin-bottom: 2em;
+  }
 
   @media (min-width: 576px) {
     .card-columns {
@@ -26,16 +29,15 @@ const StyledContainer = styled(Container)`
 
 export class Requests extends Component {
   render() {
+    const childProps = {
+      theme: this.props.theme
+    }
     return (
       <StyledContainer>
         <CardColumns>
-          <RequestCard />
-          <RequestCard />
-          <RequestCard />
-          <RequestCard />
-          <RequestCard />
-          <RequestCard />
-          <RequestCard />
+          <RequestCard props={childProps} />
+          <RequestCard props={childProps} />
+          <RequestCard props={childProps} />
         </CardColumns>
       </StyledContainer>
     )

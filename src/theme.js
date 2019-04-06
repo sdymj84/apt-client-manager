@@ -7,6 +7,7 @@ export default {
     iconColor: "#333333",
     backgroundColor: "white",
     boxBorder: "green",
+    cardTheme: "#48947f1a"
   },
   Style1: {
     hoverColor: "turqoise",
@@ -16,5 +17,6 @@ export default {
     iconColor: "green",
     backgroundColor: "#f7f7f7",
     boxBorder: "red",
+    cardTheme: "ivory"
   }
 }
