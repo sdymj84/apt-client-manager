@@ -1,6 +1,6 @@
 import React, { Component, Fragment } from 'react'
 import styled from 'styled-components'
-import { Container, CardColumns, Image, Row, Col, Form } from "react-bootstrap";
+import { Container, CardColumns, Card } from "react-bootstrap";
 import RequestCard from './RequestCard';
 import NoteModal from './NoteModal'
 import { API } from 'aws-amplify';
@@ -43,6 +43,11 @@ const StyledHashLoader = styled(HashLoader)`
   border-color: red;
 `
 
+const StyledCard = styled(Card)`
+  text-align: center;
+  margin-top: 10em;
+`
+
 export class Requests extends Component {
   state = {
     modalNote: [],
@@ -68,6 +73,24 @@ export class Requests extends Component {
     })
   }
 
+  handleButtonClick = async (i) => {
+    this.setState({ isLoading: true })
+    const request = this.state.requests[i]
+
+    try {
+      await API.put('apt', `/requests/updateStatus/${request.requestId}`, {
+        body: {
+          apartId: request.apartId,
+          requestStatus: request.requestStatus
+        }
+      })
+      this.setState({ isLoading: false })
+      this.refresh()
+    } catch (e) {
+      console.log(e, e.response)
+    }
+  }
+
   handleModalClose = () => {
     this.setState({ modalShow: false })
   }
@@ -88,12 +111,12 @@ export class Requests extends Component {
   handleNoteSubmit = async (e) => {
     e.persist()
     e.preventDefault()
-    const request = this.state.requests.Items[this.state.indexToUpdate]
+    const request = this.state.requests[this.state.indexToUpdate]
 
     this.setState({ isLoading: true })
 
     try {
-      await API.put('apt', `/requests/${request.requestId}`, {
+      await API.put('apt', `/requests/updateNote/${request.requestId}`, {
         body: {
           apartId: request.apartId,
           maintananceNote: this.state.modalNote[this.state.indexToUpdate]
@@ -111,7 +134,16 @@ export class Requests extends Component {
 
   refresh = async () => {
     try {
-      const requests = await API.get('apt', '/requests/list')
+      const result = await API.get('apt', '/requests/list')
+      let requests = result.Items
+      const highRequests = []
+      requests.forEach((request, i) => {
+        if (request.priority === "HIGH") {
+          highRequests.push(request)
+          requests.splice(i, 1)
+        }
+      })
+      requests = highRequests.concat(requests)
       this.setState({ requests })
     } catch (e) {
       console.log(e, e.response)
@@ -119,16 +151,25 @@ export class Requests extends Component {
   }
 
   render() {
+    const noRequest = (
+      <StyledCard>
+        <Card.Body>
+          Good Job! No Request at this moment.
+        </Card.Body>
+      </StyledCard>
+    )
     return (
       <StyledContainer>
         {this.state.requests
           ? <Fragment>
+            {this.state.requests.length === 0 && noRequest}
             <CardColumns>
-              {this.state.requests.Items.map((request, i) =>
+              {this.state.requests.map((request, i) =>
                 <RequestCard
                   key={request.requestId}
                   request={request}
                   theme={this.props.theme}
+                  handleButtonClick={() => this.handleButtonClick(i)}
                   handleOpenAttachment={this.handleOpenAttachment}
                   handleNoteClick={() => this.handleNoteClick(i)}
                 />)}

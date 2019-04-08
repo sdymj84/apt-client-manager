@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import styled from 'styled-components'
-import { Button, Modal, Form } from "react-bootstrap";
+import { Modal, Form } from "react-bootstrap";
 import LoaderButton from '../../components/LoaderButton'
 
 const StyledModal = styled(Modal)`

@@ -1,7 +1,6 @@
 import React, { Component } from 'react'
 import styled from 'styled-components'
-import { Card, Row, Col, Button, Modal, Image } from "react-bootstrap";
-import { Link } from 'react-router-dom'
+import { Card, Row, Col, Button, Modal, Image, Badge } from "react-bootstrap";
 import { Storage } from 'aws-amplify'
 
 const StyledCard = styled(Card)`
@@ -12,6 +11,15 @@ const StyledCard = styled(Card)`
     margin-bottom: 0;
     font-size: 1.6em;
     padding: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    .badge {
+      font-size: 0.55em;
+      padding: 8px;
+      margin: 3px;
+    }
   }
   .card-footer {
     display: flex;
@@ -57,11 +65,18 @@ export class RequestCard extends Component {
 
   render() {
     const { request, ...rest } = this.props
-    console.log(this.state.attachmentUrl)
     return (
       <StyledCard>
         <Card.Header>
-          <Card.Title>#{request.apartId}</Card.Title>
+          <Card.Title>
+            #{request.apartId}
+            <div className="badge-container">
+              {request.priority === "HIGH" && <Badge variant="danger">HIGH</Badge>}
+              {request.requestStatus === 0
+                ? <Badge variant="success">OPEN</Badge>
+                : <Badge variant="warning">IN PROGRESS</Badge>}
+            </div>
+          </Card.Title>
         </Card.Header>
         <Card.Body>
           <Row>
@@ -90,11 +105,6 @@ export class RequestCard extends Component {
               <div className="attachment" onClick={() => this.setState({ modalShow: true })}>
                 {this.formatFilename(request.attachment)}
               </div>
-              {/* <a href={this.state.attachmentUrl}
-                target="_blank"
-                rel="noopener noreferrer">
-                {this.formatFilename(request.attachment)}
-              </a> */}
             </Col>
           </Row>
           <hr />
@@ -110,10 +120,15 @@ export class RequestCard extends Component {
             onClick={rest.handleNoteClick}>
             Note
         </StyledButton>
-          <StyledButton variant="outline-primary">Complete</StyledButton>
+          <StyledButton
+            variant="outline-primary"
+            onClick={rest.handleButtonClick}>
+            {request.requestStatus === 0 ? 'Start Work' : 'Complete'}
+          </StyledButton>
         </Card.Footer>
 
         <Modal
+          size="lg"
           centered
           show={this.state.modalShow}
           onHide={this.modalClose}>
