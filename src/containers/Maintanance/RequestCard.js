@@ -21,47 +21,48 @@ const StyledButton = styled(Button)`
   margin: 0 5px;
 `
 
-const RequestCard = ({ props }) => {
+const RequestCard = ({ request, ...rest }) => {
   return (
     <StyledCard>
       <Card.Header>
-        <Card.Title>#401</Card.Title>
+        <Card.Title>#{request.apartId}</Card.Title>
       </Card.Header>
       <Card.Body>
         <Row>
           <Col>Where</Col>
-          <Col>Kitchen</Col>
+          <Col>{request.where}</Col>
         </Row>
         <hr />
         <Row>
           <Col>Description</Col>
-          <Col>Freezer light is off</Col>
+          <Col>{request.description}</Col>
         </Row>
         <hr />
         <Row>
           <Col>Permission To Enter</Col>
-          <Col>YES</Col>
+          <Col>{request.permissionToEnter}</Col>
         </Row>
         <hr />
         <Row>
           <Col>Access Instruction</Col>
-          <Col>Pass main room and follow the hallway</Col>
+          <Col>{request.accessInst}</Col>
         </Row>
         <hr />
         <Row>
           <Col>Attachment</Col>
-          <Col>photo.jpg</Col>
+          <Col>{request.attachment}</Col>
         </Row>
         <hr />
         <Row>
           <Col>Maintanance Note</Col>
-          <Col>Need hammer</Col>
+          <Col>{request.maintananceNote}</Col>
         </Row>
       </Card.Body>
       <Card.Footer>
         <StyledButton
-          theme={props.theme}
-          variant={`outline-${props.theme.buttonTheme}`}>
+          theme={rest.theme}
+          variant={`outline-${rest.theme.buttonTheme}`}
+          onClick={rest.handleNoteClick}>
           Note
         </StyledButton>
         <StyledButton variant="outline-primary">Complete</StyledButton>
