@@ -1,7 +1,7 @@
 export default {
   s3: {
     REGION: "us-east-2",
-    BUCKET: "YOUR_S3_UPLOADS_BUCKET_NAME"
+    BUCKET: "apt-api-dev-attachmentsbucket-1qpokh0rnck0c"
   },
   apiGateway: {
     REGION: "us-east-2",
