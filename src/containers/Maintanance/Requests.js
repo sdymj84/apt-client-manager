@@ -1,9 +1,10 @@
-import React, { Component } from 'react'
+import React, { Component, Fragment } from 'react'
 import styled from 'styled-components'
 import { Container, CardColumns, Image, Row, Col, Form } from "react-bootstrap";
 import RequestCard from './RequestCard';
 import NoteModal from './NoteModal'
 import { API } from 'aws-amplify';
+import { HashLoader } from 'react-spinners'
 
 
 const StyledContainer = styled(Container)`
@@ -26,7 +27,20 @@ const StyledContainer = styled(Container)`
       column-count: 2;
     }
   }
+
+  .loader-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 10em;
+  }
   
+`
+
+const StyledHashLoader = styled(HashLoader)`
+  display: block;
+  margin: 0 auto;
+  border-color: red;
 `
 
 export class Requests extends Component {
@@ -67,6 +81,10 @@ export class Requests extends Component {
     })
   }
 
+  handleOpenAttachment = () => {
+    console.log("open attachment")
+  }
+
   handleNoteSubmit = async (e) => {
     e.persist()
     e.preventDefault()
@@ -102,29 +120,38 @@ export class Requests extends Component {
 
   render() {
     return (
-      this.state.requests &&
       <StyledContainer>
-        <CardColumns>
-          {this.state.requests.Items.map((request, i) =>
-            <RequestCard
-              key={request.requestId}
-              request={request}
-              theme={this.props.theme}
-              handleNoteClick={() => this.handleNoteClick(i)}
-            />)}
-        </CardColumns>
+        {this.state.requests
+          ? <Fragment>
+            <CardColumns>
+              {this.state.requests.Items.map((request, i) =>
+                <RequestCard
+                  key={request.requestId}
+                  request={request}
+                  theme={this.props.theme}
+                  handleOpenAttachment={this.handleOpenAttachment}
+                  handleNoteClick={() => this.handleNoteClick(i)}
+                />)}
+            </CardColumns>
 
-        <NoteModal
-          modalShow={this.state.modalShow}
-          modalClose={this.handleModalClose}
-          modalNote={this.state.modalNote[this.state.indexToUpdate]}
-          validateForm={this.validateForm}
-          isLoading={this.state.isLoading}
-          handleNoteChange={this.handleNoteChange}
-          handleModalClose={this.handleModalClose}
-          handleNoteSubmit={this.handleNoteSubmit}
-          theme={this.props.theme}
-        />
+            <NoteModal
+              modalShow={this.state.modalShow}
+              modalClose={this.handleModalClose}
+              modalNote={this.state.modalNote[this.state.indexToUpdate]}
+              validateForm={this.validateForm}
+              isLoading={this.state.isLoading}
+              handleNoteChange={this.handleNoteChange}
+              handleModalClose={this.handleModalClose}
+              handleNoteSubmit={this.handleNoteSubmit}
+              theme={this.props.theme}
+            />
+          </Fragment>
+          : <div className="loader-container">
+            <StyledHashLoader
+              sizeUnit={"px"}
+              size={50}
+              color={'#36D7B7'} />
+          </div>}
       </StyledContainer>
     )
   }

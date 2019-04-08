@@ -1,6 +1,7 @@
 import React from 'react'
 import styled from 'styled-components'
 import { Card, Row, Col, Button } from "react-bootstrap";
+import { Link } from 'react-router-dom'
 
 const StyledCard = styled(Card)`
   .card-header .card-footer {
@@ -50,7 +51,11 @@ const RequestCard = ({ request, ...rest }) => {
         <hr />
         <Row>
           <Col>Attachment</Col>
-          <Col>{request.attachment}</Col>
+          <Col>
+            <Link to={rest.handleOpenAttachment}>
+              {request.attachment}
+            </Link>
+          </Col>
         </Row>
         <hr />
         <Row>
