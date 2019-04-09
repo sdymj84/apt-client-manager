@@ -21,7 +21,7 @@ import AlertModal from '../../components/AlertModal'
 
 const StyledContainer = styled(Container)`
   margin-top: 30px; 
-
+  max-width: 700px;
   .btn-container {
     text-align: right;
   }

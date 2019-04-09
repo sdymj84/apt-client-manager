@@ -1,4 +1,4 @@
-import React, { Component } from 'react'
+import React, { Component, Fragment } from 'react'
 import styled from 'styled-components'
 import { Card, Row, Col, Button, Modal, Image, Badge } from "react-bootstrap";
 import { Storage } from 'aws-amplify'
@@ -102,15 +102,16 @@ export class RequestCard extends Component {
             <Col>{request.accessInst}</Col>
           </Row>
           <hr />
-          <Row>
-            <Col>Attachment</Col>
-            <Col>
-              <div className="attachment" onClick={() => this.setState({ modalShow: true })}>
-                {this.formatFilename(request.attachment)}
-              </div>
-            </Col>
-          </Row>
-          <hr />
+          {request.attachment &&
+            <Fragment><Row>
+              <Col>Attachment</Col>
+              <Col>
+                <div className="attachment" onClick={() => this.setState({ modalShow: true })}>
+                  {this.formatFilename(request.attachment)}
+                </div>
+              </Col>
+            </Row>
+              <hr /></Fragment>}
           <Row>
             <Col>Maintanance Note</Col>
             <Col>{request.maintananceNote}</Col>

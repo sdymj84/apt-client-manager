@@ -32,6 +32,7 @@ import AlertModal from '../../components/AlertModal'
 ===============================================================*/
 const StyledContainer = styled(Container)`
   margin-top: 3em;
+  max-width: 700px;
   .unit-search {
     max-width: 500px;
     margin: auto;

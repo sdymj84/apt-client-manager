@@ -1,23 +1,23 @@
 export default {
   s3: {
     REGION: "us-east-2",
-    BUCKET: "apt-api-dev-attachmentsbucket-1qpokh0rnck0c"
+    BUCKET: "apt-api-dev-attachmentsbucket-15cyis9p1flj3"
   },
   apiGateway: {
     REGION: "us-east-2",
-    URL: "https://ps9ifgucu4.execute-api.us-east-2.amazonaws.com/dev"
+    URL: "https://bk6hzyclvf.execute-api.us-east-2.amazonaws.com/dev"
   },
   cognito: {
     REGION: "us-east-2",
-    IDENTITY_POOL_ID: "us-east-2:560d4916-d2e8-4ee2-bd33-282e6266af18"
+    IDENTITY_POOL_ID: "us-east-2:a7a6eca1-28d2-4e0e-a1dd-abed9cb2d402"
   },
   cognitoManager: {
     USER_POOL_ID: "us-east-2_Ebfy6fBko",
     APP_CLIENT_ID: "6c3klu9obknerstuvlq6evl2sn",
   },
   cognitoResident: {
-    USER_POOL_ID: "us-east-2_DhrStIt3D",
-    APP_CLIENT_ID: "8s72qccqdrvlekacimtuol1kl",
+    USER_POOL_ID: "us-east-2_k439IOM0A",
+    APP_CLIENT_ID: "4kfhfpbcinbr1ctc12brgf1lgj",
   }
 };
 

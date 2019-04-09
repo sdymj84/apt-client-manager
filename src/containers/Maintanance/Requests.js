@@ -80,7 +80,8 @@ export class Requests extends Component {
     try {
       await API.put('apt', `/requests/updateStatus/${request.requestId}`, {
         body: {
-          apartId: request.apartId,
+          // apartId: request.apartId,
+          requestedAt: request.requestedAt,
           requestStatus: request.requestStatus
         }
       })
@@ -118,7 +119,8 @@ export class Requests extends Component {
     try {
       await API.put('apt', `/requests/updateNote/${request.requestId}`, {
         body: {
-          apartId: request.apartId,
+          // apartId: request.apartId,
+          requestedAt: request.requestedAt,
           maintananceNote: this.state.modalNote[this.state.indexToUpdate]
         }
       })
