@@ -45,7 +45,7 @@ const StyledHashLoader = styled(HashLoader)`
 
 const StyledCard = styled(Card)`
   text-align: center;
-  margin-top: 10em;
+  margin-top: 5em;
 `
 
 export class Requests extends Component {

@@ -1,6 +1,7 @@
 import React from 'react'
 import { Route, Switch } from "react-router-dom";
 import NotFound from './containers/NotFound';
+import AppliedRoute from './components/AppliedRoute'
 import AuthenticatedRoute from './components/AuthenticatedRoute'
 import UnauthenticatedRoute from './components/UnauthenticatedRoute'
 import Home from './containers/Home';
@@ -13,7 +14,7 @@ import Requests from './containers/Maintanance/Requests';
 const Routes = ({ childProps }) => {
   return (
     <Switch>
-      <AuthenticatedRoute exact path='/' component={Home} props={childProps} />
+      <AppliedRoute exact path='/' component={Home} props={childProps} />
       <UnauthenticatedRoute path='/login' component={Login} props={childProps} />
       <AuthenticatedRoute path='/new-resident' component={New} props={childProps} />
       <AuthenticatedRoute path='/aparts' component={ApartInfo} props={childProps} />

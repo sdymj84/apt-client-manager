@@ -1,11 +1,12 @@
 import React, { Component } from 'react'
 import styled from 'styled-components'
-import { Container, Button, Row, Col } from "react-bootstrap";
+import { Container, Button, Row, Col, Badge } from "react-bootstrap";
 import { LinkContainer } from "react-router-bootstrap";
 import { FaUserPlus } from "react-icons/fa";
 import { GiAutoRepair, GiHouse } from "react-icons/gi";
 import { GoMegaphone } from 'react-icons/go'
 import { Link } from "react-router-dom";
+import { API } from 'aws-amplify'
 
 const StyledContainer = styled(Container)`
   text-align: center;
@@ -14,27 +15,22 @@ const StyledContainer = styled(Container)`
     margin: auto;
     max-width: 500px;
     cursor: pointer;
-    
     p {
       font-size: 1.5em;
       font-weight: bold;
     }
-    
     div {
       margin-bottom: 20px;
     }
-
     .icon {
       font-size: 7em;
     }
-
     hr {
       margin: 0;
       padding: 0;
     }
   }
 `
-
 const FlexContainer = styled.div`
   display: flex;
   align-items: center;
@@ -48,7 +44,6 @@ const FlexContainer = styled.div`
     color: #999;
   }
 `
-
 const StyledLink = styled(Link)`
   color: ${props => props.theme.iconColor};
   text-decoration: none;
@@ -58,9 +53,29 @@ const StyledLink = styled(Link)`
     text-decoration: none;
   }
 `
-
+const StyledBadge = styled(Badge)`
+  position: absolute;
+  font-size: 1.5em;
+  right: 50px;
+  top: 5px;
+`
 
 export class Home extends Component {
+  state = {
+    requestsCount: 0
+  }
+
+  componentDidMount = async () => {
+    if (this.props.isAuthenticated) {
+      try {
+        const result = await API.get('apt', '/requests/list')
+        this.setState({ requestsCount: result.Count })
+      } catch (e) {
+        console.log(e, e.response)
+      }
+    }
+  }
+
   renderLander() {
     return (
       <StyledContainer>
@@ -79,6 +94,7 @@ export class Home extends Component {
   }
 
   renderManager() {
+    const { requestsCount } = this.state
     return (
       <StyledContainer>
         <FlexContainer>
@@ -100,6 +116,8 @@ export class Home extends Component {
             <div>
               <StyledLink to='/maintanances'>
                 <GiAutoRepair className="icon" />
+                {requestsCount ?
+                  <StyledBadge variant="info">{requestsCount}</StyledBadge> : null}
                 <hr />
                 <p>Maintanance</p>
               </StyledLink>

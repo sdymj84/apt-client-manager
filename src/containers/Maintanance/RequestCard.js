@@ -38,6 +38,9 @@ const StyledButton = styled(Button)`
   margin: 0 5px;
 `
 
+const StyledModal = styled(Modal)`
+`
+
 
 export class RequestCard extends Component {
   state = {
@@ -127,13 +130,12 @@ export class RequestCard extends Component {
           </StyledButton>
         </Card.Footer>
 
-        <Modal
-          size="lg"
+        <StyledModal
           centered
           show={this.state.modalShow}
           onHide={this.modalClose}>
-          <Image src={this.state.attachmentUrl} fluid></Image>
-        </Modal>
+          <Image src={this.state.attachmentUrl} fluid />
+        </StyledModal>
       </StyledCard>
     )
   }
