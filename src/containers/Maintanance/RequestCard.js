@@ -1,6 +1,6 @@
 import React, { Component, Fragment } from 'react'
 import styled from 'styled-components'
-import { Card, Row, Col, Button, Modal, Image, Badge } from "react-bootstrap";
+import { Card, Row, Col, Button, Badge } from "react-bootstrap";
 import { Storage } from 'aws-amplify'
 
 const StyledCard = styled(Card)`
@@ -38,18 +38,9 @@ const StyledButton = styled(Button)`
   margin: 0 5px;
 `
 
-const StyledModal = styled(Modal)`
-`
-
-
 export class RequestCard extends Component {
   state = {
     attachmentUrl: "",
-    modalShow: false,
-  }
-
-  modalClose = () => {
-    this.setState({ modalShow: false })
   }
 
   componentDidMount = async () => {
@@ -106,9 +97,11 @@ export class RequestCard extends Component {
             <Fragment><Row>
               <Col>Attachment</Col>
               <Col>
-                <div className="attachment" onClick={() => this.setState({ modalShow: true })}>
+                <a href={this.state.attachmentUrl}
+                  target="_blank"
+                  rel="noopener noreferrer">
                   {this.formatFilename(request.attachment)}
-                </div>
+                </a>
               </Col>
             </Row>
               <hr /></Fragment>}
@@ -130,13 +123,6 @@ export class RequestCard extends Component {
             {request.requestStatus === 0 ? 'Start Work' : 'Complete'}
           </StyledButton>
         </Card.Footer>
-
-        <StyledModal
-          centered
-          show={this.state.modalShow}
-          onHide={this.modalClose}>
-          <Image src={this.state.attachmentUrl} fluid />
-        </StyledModal>
       </StyledCard>
     )
   }

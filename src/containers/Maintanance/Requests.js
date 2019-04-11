@@ -80,7 +80,6 @@ export class Requests extends Component {
     try {
       await API.put('apt', `/requests/updateStatus/${request.requestId}`, {
         body: {
-          // apartId: request.apartId,
           requestedAt: request.requestedAt,
           requestStatus: request.requestStatus
         }
@@ -119,7 +118,6 @@ export class Requests extends Component {
     try {
       await API.put('apt', `/requests/updateNote/${request.requestId}`, {
         body: {
-          // apartId: request.apartId,
           requestedAt: request.requestedAt,
           maintananceNote: this.state.modalNote[this.state.indexToUpdate]
         }
@@ -138,14 +136,16 @@ export class Requests extends Component {
     try {
       const result = await API.get('apt', '/requests/list')
       let requests = result.Items
-      const highRequests = []
-      requests.forEach((request, i) => {
-        if (request.priority === "HIGH") {
-          highRequests.push(request)
-          requests.splice(i, 1)
-        }
-      })
-      requests = highRequests.concat(requests)
+
+      // Sort by requestedAt
+      requests.sort((a, b) =>
+        (a.requestedAt > b.requestedAt) ?
+          1 : (a.requestedAt < b.requestedAt) ? -1 : 0)
+
+      // Sort by priority
+      requests.sort((a, b) => (a.priority < b.priority) ? -1
+        : (a.priority < b.priority) ? -1 : 0)
+
       this.setState({ requests })
     } catch (e) {
       console.log(e, e.response)
