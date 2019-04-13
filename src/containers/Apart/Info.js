@@ -212,14 +212,14 @@ export class ApartInfo extends Component {
         <StyledApartList>
           <Row>
             <Col sm={4} className="apt-img">
-              <Image src="https://place-hold.it/300x300" fluid />
+              <Image src="https://s3.us-east-2.amazonaws.com/apt-api-dev-attachmentsbucket-15cyis9p1flj3/public/savoy-main.jpg" fluid />
             </Col>
             <Col sm={8} className="apt-desc">
               <div>
                 <p className="apt-name">SAVOY</p>
                 <ul className="apt-desc-list">
-                  <li>5901 College Blvd, Overland Park, KS 66211</li>
-                  <li>(913) 888-7777</li>
+                  <li>7100 W. 141ST ST.  OVERLAND PARK, KS 66223</li>
+                  <li>(833) 218-7587</li>
                   <li>20 Units, Built in 2002</li>
                 </ul>
               </div>

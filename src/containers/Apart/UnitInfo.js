@@ -2,6 +2,7 @@ import React, { Fragment } from 'react'
 import styled from 'styled-components'
 import { Form, Card, ListGroup, Button, Badge, Row, Col } from "react-bootstrap";
 import moment from 'moment'
+import { Link } from 'react-router-dom'
 import LoaderButton from '../../components/LoaderButton';
 
 
@@ -71,11 +72,13 @@ const UnitInfo = ({ state, ...rest }) => {
       <h1 ref={rest.apartRef}>Apart Info</h1>
       <hr />
       <div className="btn-container">
-        <Button
-          className="btn-edit-apart"
-          variant={`outline-${rest.theme.buttonTheme}`}>
-          Edit Apart Info
+        <Link to='/edit-apart'>
+          <Button
+            className="btn-edit-apart"
+            variant={`outline-${rest.theme.buttonTheme}`}>
+            Edit Apart Info
         </Button>
+        </Link>
       </div>
       <StyledCard border="success">
         <Card.Body>
