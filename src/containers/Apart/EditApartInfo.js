@@ -8,7 +8,7 @@
     > System automatically calculate early move out fee
     > Update payment in resident DB
 
-3. Residents renew
+3. Residents renew : "updateRenew"
   - Manager click "Renew" > Enter leaseTerm
     > Enter new rentPrice > Schedule to change rentPrice when new lease start
 */

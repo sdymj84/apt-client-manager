@@ -25,6 +25,8 @@ import LoaderButton from '../../components/LoaderButton'
 import { resident, manager } from '../../aws-export'
 import ConfirmModal from '../../components/ConfirmModal'
 import AlertModal from '../../components/AlertModal'
+import DatePicker from 'react-datepicker'
+import "react-datepicker/dist/react-datepicker.css";
 
 
 /*===============================================================
@@ -52,7 +54,6 @@ const StyledExpandedForm = styled(Form)`
     margin: 1em 0;
   }
 `
-
 
 
 export class New extends Component {
@@ -95,7 +96,8 @@ export class New extends Component {
         isTextSub: false,
         isEmailSub: false,
       },
-      leaseTerm: 12,
+      moveInDate: new Date(),
+      leaseTerm: "",
     }
   }
 
@@ -164,6 +166,10 @@ export class New extends Component {
     this.setState({
       [target.id]: value
     })
+  }
+
+  handleDateChange = (date) => {
+    this.setState({ moveInDate: date })
   }
 
   handleErChange = (e) => {
@@ -508,6 +514,26 @@ export class New extends Component {
                 <Form.Control placeholder="1112223333"
                   onChange={(e) => this.validateNumber(e) && this.handleErChange(e)}
                   value={this.state.erContact.phone} />
+              </Form.Group>
+            </Form.Row>
+
+
+            <h1>Lease Info</h1>
+            <hr />
+            <Form.Row>
+              <Form.Group as={Col} md={4} controlId="moveInDate">
+                <Form.Label>Move In Date</Form.Label>
+                <Form.Control as={DatePicker}
+                  required
+                  onChange={this.handleDateChange}
+                  selected={this.state.moveInDate} />
+              </Form.Group>
+
+              <Form.Group as={Col} md={6} controlId="leaseTerm">
+                <Form.Label>Lease Term (0 for month to month)</Form.Label>
+                <Form.Control
+                  onChange={this.handleChange}
+                  value={this.state.leaseTerm} />
               </Form.Group>
             </Form.Row>
 
