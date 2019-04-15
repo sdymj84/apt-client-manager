@@ -189,6 +189,8 @@ export class ApartInfo extends Component {
           apart
         })
 
+        this.props.updateApartProps(apart)
+
         action === "check" && window.scrollTo({
           top: this.apartRef.current.offsetTop,
           left: 0,

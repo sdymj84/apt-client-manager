@@ -144,7 +144,7 @@ export class Requests extends Component {
 
       // Sort by priority
       requests.sort((a, b) => (a.priority < b.priority) ? -1
-        : (a.priority < b.priority) ? -1 : 0)
+        : (a.priority > b.priority) ? 1 : 0)
 
       this.setState({ requests })
     } catch (e) {

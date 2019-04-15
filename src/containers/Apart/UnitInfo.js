@@ -122,19 +122,19 @@ const UnitInfo = ({ state, ...rest }) => {
                 <ListGroup.Item>
                   <Row>
                     <Col>Move In Date</Col>
-                    <Col>{moment(state.residents[0].moveInDate).format('L')}</Col>
+                    <Col>{moment(apart.moveInDate).format('L')}</Col>
                   </Row>
                 </ListGroup.Item>
                 <ListGroup.Item>
                   <Row>
                     <Col>Lease From Date</Col>
-                    <Col>{moment(state.residents[0].leaseStartDate).format('L')}</Col>
+                    <Col>{moment(apart.leaseStartDate).format('L')}</Col>
                   </Row>
                 </ListGroup.Item>
                 <ListGroup.Item>
                   <Row>
                     <Col>Lease To Date</Col>
-                    <Col>{moment(state.residents[0].leaseEndDate).format('L')}</Col>
+                    <Col>{moment(apart.leaseEndDate).format('L')}</Col>
                   </Row>
                 </ListGroup.Item>
                 <ListGroup.Item>

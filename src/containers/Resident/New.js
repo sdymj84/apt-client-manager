@@ -377,7 +377,9 @@ export class New extends Component {
           body: {
             residentId: this.state.residentId,
             name: this.state.firstName + " " + this.state.lastName,
-            isPet: this.state.apt.isPet || this.state.isPet
+            isPet: this.state.apt.isPet || this.state.isPet,
+            leaseTerm: this.state.leaseTerm,
+            moveInDate: this.state.moveInDate
           }
         })
       console.log("Resident is successfully added to the unit")
@@ -517,25 +519,28 @@ export class New extends Component {
               </Form.Group>
             </Form.Row>
 
+            {this.state.apt && !this.state.apt.residents.length &&
+              <Fragment>
+                <h1>Lease Info</h1>
+                <hr />
+                <Form.Row>
+                  <Form.Group as={Col} md={4} controlId="moveInDate">
+                    <Form.Label>Move In Date</Form.Label>
+                    <Form.Control as={DatePicker}
+                      required
+                      onChange={this.handleDateChange}
+                      selected={this.state.moveInDate} />
+                  </Form.Group>
 
-            <h1>Lease Info</h1>
-            <hr />
-            <Form.Row>
-              <Form.Group as={Col} md={4} controlId="moveInDate">
-                <Form.Label>Move In Date</Form.Label>
-                <Form.Control as={DatePicker}
-                  required
-                  onChange={this.handleDateChange}
-                  selected={this.state.moveInDate} />
-              </Form.Group>
-
-              <Form.Group as={Col} md={6} controlId="leaseTerm">
-                <Form.Label>Lease Term (0 for month to month)</Form.Label>
-                <Form.Control
-                  onChange={this.handleChange}
-                  value={this.state.leaseTerm} />
-              </Form.Group>
-            </Form.Row>
+                  <Form.Group as={Col} md={6} controlId="leaseTerm">
+                    <Form.Label>Lease Term (1 for month to month)</Form.Label>
+                    <Form.Control
+                      required
+                      onChange={this.handleChange}
+                      value={this.state.leaseTerm} />
+                  </Form.Group>
+                </Form.Row>
+              </Fragment>}
 
 
             <h1>Vehicles</h1>

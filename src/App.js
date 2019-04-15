@@ -32,6 +32,7 @@ class App extends Component {
       isAuthenticated: false,
       uid: null,
       resident: null,
+      apart: null,
       theme: Theme.Basic
     }
   }
@@ -51,6 +52,10 @@ class App extends Component {
     this.setState({ isAuthenticated: authenticated })
   }
 
+  updateApartProps = apart => {
+    this.setState({ apart })
+  }
+
   handleLogout = async () => {
     try {
       await Auth.signOut()
@@ -65,6 +70,8 @@ class App extends Component {
     const childProps = {
       isAuthenticated: this.state.isAuthenticated,
       userHasAuthenticated: this.userHasAuthenticated,
+      updateApartProps: this.updateApartProps,
+      apart: this.state.apart,
       theme: this.state.theme
     }
     return (

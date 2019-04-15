@@ -13,9 +13,9 @@
     > Enter new rentPrice > Schedule to change rentPrice when new lease start
 */
 
-import React, { Component, Fragment } from 'react'
+import React, { Component } from 'react'
 import styled from 'styled-components'
-import { Container, Button, Form, Col } from "react-bootstrap";
+import { Container, Form, Col } from "react-bootstrap";
 import { API } from 'aws-amplify'
 import LoaderButton from '../../components/LoaderButton'
 import ConfirmModal from '../../components/ConfirmModal'
@@ -59,74 +59,34 @@ export class EditApartInfo extends Component {
     Event Handlers
   ===============================================================*/
   handleChange = (e) => {
-    const target = e.target
-    const value = target.type === "checkbox" ? target.checked : target.value
     this.setState({
-      [target.id]: value
+      [e.target.id]: e.target.value
     })
   }
 
-  handleErChange = (e) => {
+  handleAddressChange = (e) => {
     e.persist()
     this.setState(prevState => ({
-      erContact: {
-        ...prevState.erContact,
+      address: {
+        ...prevState.address,
         [e.target.id]: e.target.value
       }
     }))
   }
 
-  handleNotiChange = (e) => {
+  handlePlanChange = (e) => {
     e.persist()
     this.setState(prevState => ({
-      notifications: {
-        ...prevState.notifications,
-        [e.target.id]: e.target.checked
+      floorPlan: {
+        ...prevState.floorPlan,
+        [e.target.id]: e.target.value
       }
     }))
   }
 
-  handleVehiclesChange = (e, i) => {
-    e.persist()   // To fix Synthetic Events error
-    this.setState(prevState => {
-      const vehicles = prevState.vehicles.map((vehicle, j) => {
-        if (i === j) {
-          return {
-            ...vehicle,
-            [e.target.id]: e.target.value
-          }
-        } else {
-          return { ...vehicle }
-        }
-      })
-      return { vehicles }
-    })
-  }
-
-  handleAddVehicleClick = () => {
-    if (this.state.vehicles.length === 4) {
-      alert("You reached the maximum number of vehicles you can have.")
-      return
-    }
-    const newVehicle = {
-      year: "",
-      make: "",
-      model: "",
-      color: "",
-      licensePlate: "",
-      state: ""
-    }
-
-    this.setState(prevState => ({
-      vehicles: [...prevState.vehicles, newVehicle]
-    }))
-  }
-
-  handleRemoveVehicleClick = () => {
-    this.setState(prevState => {
-      const vehicles = prevState.vehicles
-      vehicles.pop()
-      return { vehicles }
+  handleChange = (e) => {
+    this.setState({
+      [e.target.id]: e.target.value
     })
   }
 
@@ -154,164 +114,76 @@ export class EditApartInfo extends Component {
   ===============================================================*/
   render() {
     return (
+      this.state &&
       <StyledContainer>
         <Form onSubmit={this.handleSubmit}>
-          <h1>Apart Info</h1>
+          <h1>Address</h1>
           <hr />
           <Form.Row>
-            <Form.Group as={Col} md={6} controlId="firstName">
-              <Form.Label>First Name</Form.Label>
+            <Form.Group as={Col} md={12} controlId="street">
+              <Form.Label>Street address</Form.Label>
               <Form.Control
-                onChange={this.handleChange}
-                value={this.state.firstName || ""} />
-            </Form.Group>
-
-            <Form.Group as={Col} md={6} controlId="lastName">
-              <Form.Label>Last Name</Form.Label>
-              <Form.Control
-                onChange={this.handleChange}
-                value={this.state.lastName || ""} />
+                onChange={this.handleAddressChange}
+                value={this.state.address.street || ""} />
             </Form.Group>
           </Form.Row>
 
           <Form.Row>
-            <Form.Group as={Col} controlId="isPrimary">
-              <Form.Check type="checkbox"
-                disabled
-                label="Check if this is primary account of the unit"
-                onChange={this.handleChange}
-                checked={this.state.isPrimary} />
+            <Form.Group as={Col} md={6} controlId="city">
+              <Form.Label>City</Form.Label>
+              <Form.Control
+                onChange={this.handleAddressChange}
+                value={this.state.address.city || ""} />
             </Form.Group>
 
-            <Form.Group as={Col} controlId="isPet">
-              <Form.Check type="checkbox"
-                disabled
-                label="Check if there's pet"
-                onChange={this.handleChange}
-                checked={this.state.isPet} />
+            <Form.Group as={Col} md={3} controlId="state">
+              <Form.Label>State</Form.Label>
+              <Form.Control
+                onChange={this.handleAddressChange}
+                value={this.state.address.state || ""} />
+            </Form.Group>
+
+            <Form.Group as={Col} md={3} controlId="zipcode">
+              <Form.Label>Zipcode</Form.Label>
+              <Form.Control
+                onChange={this.handleAddressChange}
+                value={this.state.address.zipcode || ""} />
             </Form.Group>
           </Form.Row>
 
-
-          <h3>Emergency Contact</h3>
+          <h1>Floor Plan</h1>
           <hr />
           <Form.Row>
-            <Form.Group as={Col} md={4} controlId="firstName">
-              <Form.Label>First Name</Form.Label>
+            <Form.Group as={Col} md={4} controlId="name">
+              <Form.Label>Plan Name</Form.Label>
               <Form.Control
-                onChange={this.handleErChange}
-                value={this.state.erContact.firstName || ""} />
+                onChange={this.handlePlanChange}
+                value={this.state.floorPlan.name || ""} />
             </Form.Group>
 
-            <Form.Group as={Col} md={4} controlId="lastName">
-              <Form.Label>Last Name</Form.Label>
+            <Form.Group as={Col} md={4} controlId="roomCount">
+              <Form.Label>Room Count</Form.Label>
               <Form.Control
-                onChange={this.handleErChange}
-                value={this.state.erContact.lastName || ""} />
+                onChange={this.handlePlanChange}
+                value={this.state.floorPlan.roomCount || ""} />
             </Form.Group>
 
-            <Form.Group as={Col} md={4} controlId="phone">
-              <Form.Label>Phone</Form.Label>
-              <Form.Control placeholder="1112223333"
-                onChange={(e) => this.validateNumber(e) && this.handleErChange(e)}
-                value={this.state.erContact.phone || ""} />
+            <Form.Group as={Col} md={4} controlId="sqft">
+              <Form.Label>Sqft.</Form.Label>
+              <Form.Control
+                onChange={this.handlePlanChange}
+                value={this.state.floorPlan.sqft || ""} />
             </Form.Group>
           </Form.Row>
 
-
-          <h1>Vehicles</h1>
-          {this.state.vehicles.map((vehicle, i) => {
-            return <Fragment key={i}>
-              <hr />
-              <Form.Row>
-                <Form.Group as={Col} md={4} controlId="year">
-                  <Form.Label>Year</Form.Label>
-                  <Form.Control placeholder="YYYY"
-                    onChange={(e) => this.validateNumber(e) && this.handleVehiclesChange(e, i)}
-                    value={vehicle.year || ""} />
-                </Form.Group>
-
-                <Form.Group as={Col} md={4} controlId="make">
-                  <Form.Label>Make</Form.Label>
-                  <Form.Control placeholder="Honda"
-                    onChange={(e) => this.handleVehiclesChange(e, i)}
-                    value={vehicle.make || ""} />
-                </Form.Group>
-
-                <Form.Group as={Col} md={4} controlId="model">
-                  <Form.Label>Model</Form.Label>
-                  <Form.Control placeholder="Accord"
-                    onChange={(e) => this.handleVehiclesChange(e, i)}
-                    value={vehicle.model || ""} />
-                </Form.Group>
-              </Form.Row>
-
-              <Form.Row>
-                <Form.Group as={Col} md={4} controlId="color">
-                  <Form.Label>Color</Form.Label>
-                  <Form.Control
-                    onChange={(e) => this.handleVehiclesChange(e, i)}
-                    value={vehicle.color || ""} />
-                </Form.Group>
-
-                <Form.Group as={Col} md={4} controlId="licensePlate">
-                  <Form.Label>License Plate</Form.Label>
-                  <Form.Control
-                    onChange={(e) => this.handleVehiclesChange(e, i)}
-                    value={vehicle.licensePlate || ""} />
-                </Form.Group>
-
-                <Form.Group as={Col} md={4} controlId="state">
-                  <Form.Label>State</Form.Label>
-                  <Form.Control
-                    onChange={(e) => this.handleVehiclesChange(e, i)}
-                    value={vehicle.state || ""} />
-                </Form.Group>
-              </Form.Row>
-            </Fragment>
-          })}
-
-          <Form.Row>
-            <Form.Group as={Col}>
-              <Button
-                block
-                variant={`outline-${this.props.theme.buttonTheme}`}
-                onClick={this.handleAddVehicleClick}
-              >Add Another Vehicle
-              </Button>
-            </Form.Group>
-
-            {this.state.vehicles.length > 1 &&
-              <Form.Group as={Col}>
-                <Button
-                  block
-                  variant={`outline-${this.props.theme.buttonTheme}`}
-                  onClick={this.handleRemoveVehicleClick}
-                >Remove Last Vehicle
-                  </Button>
-              </Form.Group>}
-          </Form.Row>
-
-
-          <h1>User Settings</h1>
+          <h1>Rent Price</h1>
           <hr />
           <Form.Row>
-            <Form.Group as={Col} controlId="isEmailSub">
-              <Form.Check type="checkbox" label="Allow Email Notifications"
-                onChange={this.handleNotiChange}
-                checked={this.state.notifications.isEmailSub} />
-            </Form.Group>
-
-            <Form.Group as={Col} controlId="isTextSub">
-              <Form.Check type="checkbox" label="Allow Text Notifications"
-                onChange={this.handleNotiChange}
-                checked={this.state.notifications.isTextSub} />
-            </Form.Group>
-
-            <Form.Group as={Col} controlId="isVoiceCallSub">
-              <Form.Check type="checkbox" label="Allow Voice call"
-                onChange={this.handleNotiChange}
-                checked={this.state.notifications.isVoiceCallSub} />
+            <Form.Group as={Col} md={12} controlId="rentPrice">
+              <Form.Label>Rent Price</Form.Label>
+              <Form.Control
+                onChange={this.handleChange}
+                value={this.state.rentPrice || ""} />
             </Form.Group>
           </Form.Row>
 
