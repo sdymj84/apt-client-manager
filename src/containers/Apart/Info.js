@@ -17,6 +17,7 @@ import { API } from 'aws-amplify'
 import UnitInfo from './UnitInfo'
 import ConfirmModal from '../../components/ConfirmModal'
 import AlertModal from '../../components/AlertModal'
+import queryString from 'query-string'
 
 
 const StyledContainer = styled(Container)`
@@ -61,6 +62,7 @@ export class ApartInfo extends Component {
 
     this.apartRef = React.createRef()
     this.unitSearchRef = React.createRef()
+    this._isMounted = false
     this.state = {
       apartId: "",
       isLoading: false,
@@ -76,9 +78,20 @@ export class ApartInfo extends Component {
   }
 
   componentDidMount = () => {
-    this.unitSearchRef.current.focus()
+    this._isMounted = true
+    const values = queryString.parse(this.props.location.search)
+    if (values.apartId) {
+      this._isMounted && this.setState({
+        apartId: values.apartId
+      }, () => { this.getApartInfo("check") })
+    } else {
+      this.unitSearchRef.current.focus()
+    }
   }
 
+  componentWillUnmount() {
+    this._isMounted = false
+  }
 
   validateForm = () => {
     return this.state.email.length > 0

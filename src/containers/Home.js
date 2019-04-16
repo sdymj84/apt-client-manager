@@ -61,20 +61,27 @@ const StyledBadge = styled(Badge)`
 `
 
 export class Home extends Component {
+  _isMounted = false
   state = {
     requestsCount: 0
   }
 
   componentDidMount = async () => {
+    this._isMounted = true
     if (this.props.isAuthenticated) {
       try {
         const result = await API.get('apt', '/requests/list')
-        this.setState({ requestsCount: result.Count })
+        this._isMounted && this.setState({ requestsCount: result.Count })
       } catch (e) {
         console.log(e, e.response)
       }
     }
   }
+
+  componentWillUnmount() {
+    this._isMounted = false
+  }
+  
 
   renderLander() {
     return (

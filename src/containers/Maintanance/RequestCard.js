@@ -39,19 +39,29 @@ const StyledButton = styled(Button)`
 `
 
 export class RequestCard extends Component {
-  state = {
-    attachmentUrl: "",
+  constructor(props) {
+    super(props)
+    this._isMounted = false
+    this.state = {
+      attachmentUrl: "",
+    }
   }
 
   componentDidMount = async () => {
+    this._isMounted = true
     const { attachment } = this.props.request
     try {
       const attachmentUrl = attachment && await Storage.get(attachment)
-      this.setState({ attachmentUrl })
+      this._isMounted && this.setState({ attachmentUrl })
     } catch (e) {
       console.log(e, e.response)
     }
   }
+
+  componentWillUnmount() {
+    this._isMounted = false
+  }
+  
 
   formatFilename = (filename) => {
     return filename.replace(/^\w+-/, "")

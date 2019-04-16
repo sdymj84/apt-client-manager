@@ -49,16 +49,25 @@ const StyledCard = styled(Card)`
 `
 
 export class Requests extends Component {
-  state = {
-    modalNote: [],
-    modalShow: false,
-    requests: "",
-    indexToUpdate: "",
-    isLoading: false,
+  constructor(props) {
+    super(props)
+    this._isMounted = false
+    this.state = {
+      modalNote: [],
+      modalShow: false,
+      requests: "",
+      indexToUpdate: "",
+      isLoading: false,
+    }
   }
 
   componentDidMount = () => {
-    this.refresh()
+    this._isMounted = true
+    this._isMounted && this.refresh()
+  }
+
+  componentWillUnmount() {
+    this._isMounted = false
   }
 
   validateForm = () => {
@@ -146,7 +155,7 @@ export class Requests extends Component {
       requests.sort((a, b) => (a.priority < b.priority) ? -1
         : (a.priority > b.priority) ? 1 : 0)
 
-      this.setState({ requests })
+      this._isMounted && this.setState({ requests })
     } catch (e) {
       console.log(e, e.response)
     }

@@ -96,11 +96,10 @@ export class EditApartInfo extends Component {
     this.setState({ isLoading: true })
 
     try {
-      await API.put('apt', `/residents/${this.state.residentId}`, {
+      await API.put('apt', `/aparts/info/${this.state.apartId}`, {
         body: this.state
       })
-      this.props.updateResident(this.state.residentId)
-      this.props.history.push('/resident')
+      this.props.history.push(`/aparts?apartId=${this.state.apartId}`)
     } catch (e) {
       console.log(e, e.response)
       this.setState({ isLoading: false })
