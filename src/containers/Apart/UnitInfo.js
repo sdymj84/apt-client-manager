@@ -4,13 +4,20 @@ import { Form, Card, ListGroup, Button, Badge, Row, Col } from "react-bootstrap"
 import moment from 'moment'
 import { Link } from 'react-router-dom'
 import LoaderButton from '../../components/LoaderButton';
+import EarlyMoveOutModal from './EarlyMoveOutModal';
 
 
 const StyledExpandedForm = styled(Form)`
   margin-top: 2em;
   width: 100%;
-  .btn-edit-apart {
+  .btn-container {
+    display: flex;
+    justify-content: flex-end;
     margin: 1em 0;
+    flex-wrap: wrap;
+  }
+  .btn-edit-apart {
+    margin: 5px 5px 0 0;
   }
 `
 
@@ -79,6 +86,17 @@ const UnitInfo = ({ state, ...rest }) => {
             Edit Apart Info
         </Button>
         </Link>
+        <Button
+          onClick={rest.handleModalShow}
+          className="btn-edit-apart"
+          variant='outline-danger'>
+          Early Move Out
+        </Button>
+        <Button
+          className="btn-edit-apart"
+          variant='outline-success'>
+          Renew
+        </Button>
       </div>
       <StyledCard border="success">
         <Card.Body>
@@ -230,6 +248,15 @@ const UnitInfo = ({ state, ...rest }) => {
           </Card.Footer>
         </StyledCard>
       )}
+
+      <EarlyMoveOutModal
+        modalShow={rest.modalShow}
+        moveOutDate={rest.moveOutDate}
+        moveOutMessage={rest.moveOutMessage}
+        handleModalClose={rest.handleModalClose}
+        handleDateChange={rest.handleDateChange}
+        handleMoveOutSubmit={rest.handleMoveOutSubmit}
+      />
     </StyledExpandedForm>
   )
 }

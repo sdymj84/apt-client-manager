@@ -18,6 +18,7 @@ import UnitInfo from './UnitInfo'
 import ConfirmModal from '../../components/ConfirmModal'
 import AlertModal from '../../components/AlertModal'
 import queryString from 'query-string'
+import moment from 'moment'
 
 
 const StyledContainer = styled(Container)`
@@ -71,9 +72,12 @@ export class ApartInfo extends Component {
       residents: [],
       apart: "",
       modalShow: false,
+      modalConfirmShow: false,
       modalAlertShow: false,
       modalMessage: "",
       indexToDelete: "",
+      moveOutDate: new Date(),
+      moveOutMessage: [],
     }
   }
 
@@ -121,10 +125,18 @@ export class ApartInfo extends Component {
 
   handleDeleteClick = (i) => {
     this.setState({
-      modalShow: true,
+      modalConfirmShow: true,
       modalMessage: "Are you sure to delete this resident?",
       indexToDelete: i
     })
+  }
+
+  handleModalShow = () => {
+    this.setState({ modalShow: true })
+  }
+
+  handleModalClose = () => {
+    this.setState({ modalShow: false })
   }
 
   handleModalAlertClose = () => {
@@ -132,7 +144,7 @@ export class ApartInfo extends Component {
   }
 
   handleModalNo = () => {
-    this.setState({ modalShow: false })
+    this.setState({ modalConfirmShow: false })
   }
 
   handleModalYes = async () => {
@@ -140,7 +152,7 @@ export class ApartInfo extends Component {
       const isDeleting = prevState.isDeleting
       isDeleting[prevState.indexToDelete] = true
       return {
-        modalShow: false,
+        modalConfirmShow: false,
         isDeleting
       }
     })
@@ -199,7 +211,8 @@ export class ApartInfo extends Component {
           isLoading: false,
           isExpanded: true,
           residents,
-          apart
+          apart,
+          moveOutDate: apart.leaseEndDate
         })
 
         this.props.updateApartProps(apart)
@@ -218,6 +231,56 @@ export class ApartInfo extends Component {
       })
       console.log(e, e.response)
     }
+  }
+
+  handleDateChange = (date) => {
+    /* 
+      Calculate balance
+      1. if moveOutDate is earlier than leaseEndDate
+        -> broke contract fee : + 1 month rent price
+      2. if moveOutDate is later than two months from now
+        -> nothing to do
+      3. if moveOutDate is earlier than two months from now
+        -> remaining payment balance is two months rent price
+    */
+
+    const today = moment()
+    const sixtyDaysFromNow = moment().add(60, 'days')
+    const moveOutDate = moment(date)
+    const leaseEndDate = moment(this.state.apart.leaseEndDate)
+    const rentPrice = this.state.apart.rentPrice
+    const diffDays = moment.duration(moveOutDate.diff(today)).as('days')
+
+    const moveOutMessage = []
+    if (moveOutDate < leaseEndDate) {
+      moveOutMessage.push(`<div><strong>Lease Contract ends ${leaseEndDate.format('L')}</strong></div>
+      <div>One month rent ($${rentPrice}) will be charged due to early move out</div>`)
+    }
+
+    if (diffDays < 59) {
+      // TODO: Calculate again
+      const extraPayment = Math.floor((rentPrice * 2) - ((rentPrice / 30) * diffDays))
+
+      moveOutMessage.push(`<div><strong>60 days notice rule</strong></div>
+      <div>You need to pay until ${sixtyDaysFromNow.format('L')}, 
+      which is 60 days from today</div>
+      <div> - Total amount you need to pay extra is $${extraPayment}</div>`)
+    }
+
+
+
+
+    this.setState({
+      moveOutDate: date,
+      moveOutMessage
+    })
+  }
+
+  handleMoveOutSubmit = (e) => {
+    e.preventDefault()
+
+
+
   }
 
   render() {
@@ -266,11 +329,18 @@ export class ApartInfo extends Component {
             handleDeleteClick={this.handleDeleteClick}
             apartRef={this.apartRef}
             theme={this.props.theme}
+            modalShow={this.state.modalShow}
+            moveOutDate={this.state.moveOutDate}
+            moveOutMessage={this.state.moveOutMessage}
+            handleModalShow={this.handleModalShow}
+            handleModalClose={this.handleModalClose}
+            handleDateChange={this.handleDateChange}
+            handleMoveOutSubmit={this.handleMoveOutSubmit}
           />
         }
 
         <ConfirmModal
-          modalShow={this.state.modalShow}
+          modalShow={this.state.modalConfirmShow}
           modalMessage={this.state.modalMessage}
           handleModalYes={this.handleModalYes}
           handleModalNo={this.handleModalNo}
