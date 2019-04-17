@@ -21,6 +21,13 @@ const StyledModal = styled(Modal)`
   .move-out-textbox {
     margin-bottom: 1em;
   }
+  hr {
+    margin: 0.6em 0;
+  }
+  .total-container {
+    display: flex;
+    justify-content: flex-end;
+  }
 `
 
 const Warning = styled.div`

@@ -244,29 +244,43 @@ export class ApartInfo extends Component {
         -> remaining payment balance is two months rent price
     */
 
-    const today = moment()
+    const today = moment().startOf('date')
     const sixtyDaysFromNow = moment().add(60, 'days')
     const moveOutDate = moment(date)
     const leaseEndDate = moment(this.state.apart.leaseEndDate)
     const rentPrice = this.state.apart.rentPrice
-    const diffDays = moment.duration(moveOutDate.diff(today)).as('days')
+    const diffDays = moveOutDate.diff(today, 'days')
+    let extraPayment = 0
 
     const moveOutMessage = []
     if (moveOutDate < leaseEndDate) {
       moveOutMessage.push(`<div><strong>Lease Contract ends ${leaseEndDate.format('L')}</strong></div>
-      <div>One month rent ($${rentPrice}) will be charged due to early move out</div>`)
+      <div>One month rent will be charged due to early move out</div>
+      <hr />
+      <div className="total-payment">Amount : $${rentPrice}</div>`)
     }
 
-    if (diffDays < 59) {
-      // TODO: Calculate again
-      const extraPayment = Math.floor((rentPrice * 2) - ((rentPrice / 30) * diffDays))
+    if (diffDays < 60) {
+      extraPayment = Math.floor((rentPrice * 2) - ((rentPrice / 30) * diffDays))
 
       moveOutMessage.push(`<div><strong>60 days notice rule</strong></div>
-      <div>You need to pay until ${sixtyDaysFromNow.format('L')}, 
-      which is 60 days from today</div>
-      <div> - Total amount you need to pay extra is $${extraPayment}</div>`)
+      <div>You need to pay until ${sixtyDaysFromNow.format('L')} (60 days from now)</div>
+      <div>1 day prorated value : $${Math.round(rentPrice / 3) / 10}</div>
+      <div>Additional days you need to pay : ${60 - diffDays}</div>
+      <hr />
+      <div className="total-payment">Amount : $${extraPayment}`)
     }
 
+    if (moveOutDate < leaseEndDate || diffDays < 60) {
+      const formatter = new Intl.NumberFormat('en-US', {
+        style: 'currency',
+        currency: 'USD',
+      })
+      moveOutMessage.push(`<div class="total-container">
+      <div><strong>
+      Total : ${formatter.format(Number(rentPrice) + Number(extraPayment))}
+      </strong></div></div>`)
+    }
 
 
 
