@@ -151,8 +151,22 @@ const UnitInfo = ({ state, ...rest }) => {
                 </ListGroup.Item>
                 <ListGroup.Item>
                   <Row>
+                    <Col>Lease Term</Col>
+                    <Col>{apart.leaseTerm === 1
+                      ? "Month to month" : apart.leaseTerm} Months
+                    </Col>
+                  </Row>
+                </ListGroup.Item>
+                <ListGroup.Item>
+                  <Row>
                     <Col>Lease To Date</Col>
                     <Col>{moment(apart.leaseEndDate).format('L')}</Col>
+                  </Row>
+                </ListGroup.Item>
+                <ListGroup.Item>
+                  <Row>
+                    <Col>Move Out Date</Col>
+                    <Col>{moment(apart.moveOutDate).format('L')}</Col>
                   </Row>
                 </ListGroup.Item>
                 <ListGroup.Item>

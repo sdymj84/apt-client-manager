@@ -75,7 +75,6 @@ export class EarlyMoveOutModal extends Component {
                 <Form.Control as={DatePicker}
                   required
                   minDate={new Date()}
-                  maxDate={new Date(moment(props.leaseEndDate).subtract(1, 'days'))}
                   onChange={props.handleDateChange}
                   selected={new Date(props.moveOutDate)} />
               </Form.Group>
