@@ -10,6 +10,8 @@ import React, { Component } from 'react'
 import { Form, Modal, Col, Button, Alert } from 'react-bootstrap'
 import DatePicker from 'react-datepicker'
 import styled from 'styled-components'
+import moment from 'moment'
+import LoaderButton from '../../components/LoaderButton'
 
 const StyledModal = styled(Modal)`
   .form-label {
@@ -38,7 +40,7 @@ const Warning = styled.div`
 
 export class EarlyMoveOutModal extends Component {
   state = {
-    confirmText: ""
+    confirmText: "",
   }
 
   emptyConfirmText = () => {
@@ -72,6 +74,8 @@ export class EarlyMoveOutModal extends Component {
                 <Form.Label>Move Out Date</Form.Label>
                 <Form.Control as={DatePicker}
                   required
+                  minDate={new Date()}
+                  maxDate={new Date(moment(props.leaseEndDate).subtract(1, 'days'))}
                   onChange={props.handleDateChange}
                   selected={new Date(props.moveOutDate)} />
               </Form.Group>
@@ -89,19 +93,28 @@ export class EarlyMoveOutModal extends Component {
               onChange={this.handleChange}
               value={this.state.confirmText} />
             <Button
-              variant="secondary"
+              variant="outline-secondary"
               onClick={() => {
                 this.emptyConfirmText()
                 props.handleModalClose()
               }}>
               Close
             </Button>
-            <Button
+            {/* <Button
               variant="primary"
               onClick={props.handleMoveOutSubmit}
               disabled={!this.validateText()}>
               Save Changes
-            </Button>
+            </Button> */}
+            <LoaderButton type="submit"
+              block
+              variant="outline-danger"
+              onClick={props.handleMoveOutSubmit}
+              disabled={!this.validateText()}
+              isLoading={props.isLoading}
+              text="Update"
+              loadingText="Updating..">
+            </LoaderButton>
           </Modal.Footer>
         </Form>
       </StyledModal>

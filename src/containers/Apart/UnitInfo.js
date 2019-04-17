@@ -250,8 +250,11 @@ const UnitInfo = ({ state, ...rest }) => {
       )}
 
       <EarlyMoveOutModal
+        theme={rest.theme}
+        isLoading={rest.isLoading}
         modalShow={rest.modalShow}
         moveOutDate={rest.moveOutDate}
+        leaseEndDate={rest.leaseEndDate}
         moveOutMessage={rest.moveOutMessage}
         handleModalClose={rest.handleModalClose}
         handleDateChange={rest.handleDateChange}

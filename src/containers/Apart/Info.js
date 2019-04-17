@@ -250,39 +250,38 @@ export class ApartInfo extends Component {
     const leaseEndDate = moment(this.state.apart.leaseEndDate)
     const rentPrice = this.state.apart.rentPrice
     const diffDays = moveOutDate.diff(today, 'days')
+    const oneDayProrated = Math.round(rentPrice / 0.3) / 100
     let extraPayment = 0
+    const formatter = new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+    })
 
     const moveOutMessage = []
     if (moveOutDate < leaseEndDate) {
       moveOutMessage.push(`<div><strong>Lease Contract ends ${leaseEndDate.format('L')}</strong></div>
       <div>One month rent will be charged due to early move out</div>
       <hr />
-      <div className="total-payment">Amount : $${rentPrice}</div>`)
+      <div className="total-payment">Amount : ${formatter.format(Number(rentPrice))}</div>`)
     }
 
     if (diffDays < 60) {
-      extraPayment = Math.floor((rentPrice * 2) - ((rentPrice / 30) * diffDays))
+      extraPayment = oneDayProrated * (60 - diffDays)
 
       moveOutMessage.push(`<div><strong>60 days notice rule</strong></div>
       <div>You need to pay until ${sixtyDaysFromNow.format('L')} (60 days from now)</div>
-      <div>1 day prorated value : $${Math.round(rentPrice / 3) / 10}</div>
+      <div>1 day prorated value : ${formatter.format(oneDayProrated)}</div>
       <div>Additional days you need to pay : ${60 - diffDays}</div>
       <hr />
-      <div className="total-payment">Amount : $${extraPayment}`)
+      <div className="total-payment">Amount : ${formatter.format(Number(extraPayment))}`)
     }
 
     if (moveOutDate < leaseEndDate || diffDays < 60) {
-      const formatter = new Intl.NumberFormat('en-US', {
-        style: 'currency',
-        currency: 'USD',
-      })
       moveOutMessage.push(`<div class="total-container">
       <div><strong>
       Total : ${formatter.format(Number(rentPrice) + Number(extraPayment))}
       </strong></div></div>`)
     }
-
-
 
     this.setState({
       moveOutDate: date,
@@ -290,11 +289,24 @@ export class ApartInfo extends Component {
     })
   }
 
-  handleMoveOutSubmit = (e) => {
+  handleMoveOutSubmit = async (e) => {
     e.preventDefault()
 
+    this.setState({ isLoading: true })
 
+    try {
+      await API.put('apt', `/aparts/earlyMoveOut/${this.state.apartId}`, {
+        body: {
+          moveOutDate: this.state.moveOutDate
+        }
+      })
+    } catch (e) {
+      console.log(e, e.response)
+      this.setState({ isLoading: false })
+    }
 
+    this.getApartInfo("check")
+    this.handleModalClose()
   }
 
   render() {
@@ -340,12 +352,16 @@ export class ApartInfo extends Component {
         {this.state.isExpanded && apart &&
           <UnitInfo
             state={this.state}
-            handleDeleteClick={this.handleDeleteClick}
-            apartRef={this.apartRef}
-            theme={this.props.theme}
+
+            isLoading={this.state.isLoading}
             modalShow={this.state.modalShow}
             moveOutDate={this.state.moveOutDate}
             moveOutMessage={this.state.moveOutMessage}
+
+            handleDeleteClick={this.handleDeleteClick}
+            apartRef={this.apartRef}
+            theme={this.props.theme}
+            leaseEndDate={apart.leaseEndDate}
             handleModalShow={this.handleModalShow}
             handleModalClose={this.handleModalClose}
             handleDateChange={this.handleDateChange}
