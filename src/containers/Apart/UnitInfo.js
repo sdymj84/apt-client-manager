@@ -5,6 +5,7 @@ import moment from 'moment'
 import { Link } from 'react-router-dom'
 import LoaderButton from '../../components/LoaderButton';
 import EarlyMoveOutModal from './EarlyMoveOutModal';
+import RenewModal from './RenewModal';
 
 
 const StyledExpandedForm = styled(Form)`
@@ -43,22 +44,21 @@ const StyledCard = styled(Card)`
       display: block;
     }
   }
-
   .list-group-item:first-child {
     border-top: 2px solid #005916;
   }
-
   .btn-delete-resident {
     margin: 0;
   }
-
   .card-footer {
     text-align: right;
     background-color: #eff7f5;
   }
-
   .row {
     align-items: center;
+  }
+  .move-out-confirmed {
+    color: red;
   }
 `
 
@@ -74,6 +74,10 @@ const UnitInfo = ({ state, ...rest }) => {
     return null
   }
 
+  const today = moment().startOf('date')
+  const leaseEndDate = moment(apart.leaseEndDate)
+  const diffDays = leaseEndDate.diff(today, 'days')
+
   return (
     <StyledExpandedForm>
       <h1 ref={rest.apartRef}>Apart Info</h1>
@@ -86,17 +90,23 @@ const UnitInfo = ({ state, ...rest }) => {
             Edit Apart Info
         </Button>
         </Link>
-        <Button
-          onClick={rest.handleModalShow}
-          className="btn-edit-apart"
-          variant='outline-danger'>
-          Early Move Out
-        </Button>
-        <Button
-          className="btn-edit-apart"
-          variant='outline-success'>
-          Renew
-        </Button>
+        {!apart.moveOutConfirmed && !!apart.residents.length &&
+          <Button
+            onClick={rest.handleMoveOutModalShow}
+            disabled={apart.moveOutConfirmed}
+            className="btn-edit-apart"
+            variant='outline-danger'>
+            Early Move Out
+          </Button>}
+        {!apart.moveOutConfirmed && !!apart.residents.length &&
+          diffDays < 60 &&
+          <Button
+            onClick={rest.handleRenewModalShow}
+            disabled={apart.moveOutConfirmed}
+            className="btn-edit-apart"
+            variant='outline-success'>
+            Renew
+          </Button>}
       </div>
       <StyledCard border="success">
         <Card.Body>
@@ -166,7 +176,10 @@ const UnitInfo = ({ state, ...rest }) => {
                 <ListGroup.Item>
                   <Row>
                     <Col>Move Out Date</Col>
-                    <Col>{moment(apart.moveOutDate).format('L')}</Col>
+                    {apart.moveOutConfirmed
+                      ? <Col className="move-out-confirmed">
+                        {moment(apart.moveOutDate).format('L')}</Col>
+                      : <Col>{moment(apart.moveOutDate).format('L')}</Col>}
                   </Row>
                 </ListGroup.Item>
                 <ListGroup.Item>
@@ -266,13 +279,23 @@ const UnitInfo = ({ state, ...rest }) => {
       <EarlyMoveOutModal
         theme={rest.theme}
         isLoading={rest.isLoading}
-        modalShow={rest.modalShow}
         moveOutDate={rest.moveOutDate}
         leaseEndDate={rest.leaseEndDate}
+
         moveOutMessage={rest.moveOutMessage}
-        handleModalClose={rest.handleModalClose}
+        modalShow={rest.modalMoveOutShow}
+        handleModalClose={rest.handleMoveOutModalClose}
         handleDateChange={rest.handleDateChange}
         handleMoveOutSubmit={rest.handleMoveOutSubmit}
+      />
+      <RenewModal
+        theme={rest.theme}
+        isLoading={rest.isLoading}
+        newLeaseTerm={rest.newLeaseTerm}
+        modalShow={rest.modalRenewShow}
+        handleModalClose={rest.handleRenewModalClose}
+        handleRenewChange={rest.handleRenewChange}
+        handleRenewSubmit={rest.handleRenewSubmit}
       />
     </StyledExpandedForm>
   )

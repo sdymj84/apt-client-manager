@@ -1,9 +1,9 @@
-### Early Move Out
-1. if moveOutDate is earlier than leaseEndDate
+### Early Move Out (Do after resident sign it)
+- if moveOutDate is earlier than leaseEndDate
   -> broke contract fee : + 1 month rent price
-2. if moveOutDate is later than two months from now
+- if moveOutDate is later than two months from now
   -> nothing to do
-3. if moveOutDate is earlier than two months from now
+- if moveOutDate is earlier than two months from now
   -> remaining payment balance is two months rent price
 
 
@@ -41,3 +41,9 @@
       
         Do nothing
 
+### Renew (Do after resident sign it)
+- Show modal with one input field (number between 6-12)
+- Message : "Please enter Renew in below text field to proceed.
+This cannot be undone.
+- Submit with new leaseTerm
+- Update apart db : leaseTerm, leaseStartDate, leaseEndDate

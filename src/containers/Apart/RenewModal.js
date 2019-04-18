@@ -1,6 +1,5 @@
 import React, { Component } from 'react'
-import { Form, Modal, Col, Button, Alert } from 'react-bootstrap'
-import DatePicker from 'react-datepicker'
+import { Form, Modal, Col, Button, Dropdown } from 'react-bootstrap'
 import styled from 'styled-components'
 import LoaderButton from '../../components/LoaderButton'
 
@@ -11,7 +10,7 @@ const StyledModal = styled(Modal)`
   .modal-footer {
     flex-wrap: wrap;
   }
-  .move-out-textbox {
+  .renew-textbox {
     margin-bottom: 1em;
   }
   hr {
@@ -29,7 +28,7 @@ const Warning = styled.div`
   margin-left: 0.25em;
 `
 
-export class EarlyMoveOutModal extends Component {
+export class RenewModal extends Component {
   state = {
     confirmText: "",
   }
@@ -43,7 +42,7 @@ export class EarlyMoveOutModal extends Component {
   }
 
   validateText = () => {
-    return this.state.confirmText === "MoveOut"
+    return this.state.confirmText === "Renew"
   }
 
   render() {
@@ -55,31 +54,36 @@ export class EarlyMoveOutModal extends Component {
           this.emptyConfirmText()
           props.handleModalClose()
         }}>
-        <Form onSubmit={props.handleMoveOutSubmit}>
+        <Form onSubmit={props.handleRenewSubmit}>
           <Modal.Header closeButton>
-            <Modal.Title>Early Move Out</Modal.Title>
+            <Modal.Title>Renew</Modal.Title>
           </Modal.Header>
           <Modal.Body>
             <Form.Row>
-              <Form.Group as={Col} md={6} controlId="moveOutDate">
-                <Form.Label>Move Out Date</Form.Label>
-                <Form.Control as={DatePicker}
-                  required
-                  minDate={new Date()}
-                  onChange={props.handleDateChange}
-                  selected={new Date(props.moveOutDate)} />
+              <Form.Group as={Col} md={6} controlId="newLeaseTerm">
+                <Form.Label>Lease Term (6-12 Months)</Form.Label>
+                <Dropdown
+                  onSelect={props.handleRenewChange}
+                  drop='right'>
+                  <Dropdown.Toggle variant="outline-secondary">
+                    {`${props.newLeaseTerm} Months `}
+                  </Dropdown.Toggle>
+                  <Dropdown.Menu>
+                    {[6, 7, 8, 9, 10, 11, 12].map(newLeaseTerm =>
+                      <Dropdown.Item
+                        eventKey="newLeaseTerm"
+                        key={newLeaseTerm}>{newLeaseTerm}
+                      </Dropdown.Item>)}
+                  </Dropdown.Menu>
+                </Dropdown>
               </Form.Group>
             </Form.Row>
-            {props.moveOutMessage.map((msg, i) =>
-              <Alert key={i} variant="danger">
-                <div dangerouslySetInnerHTML={{ __html: msg }}></div>
-              </Alert>)}
           </Modal.Body>
           <Modal.Footer>
-            <Warning><div>Please enter <strong>MoveOut</strong> in below text field to proceed.</div>
+            <Warning><div>Please enter <strong>Renew</strong> in below text field to proceed.</div>
               <div style={{ color: 'red' }}>This cannot be undone.</div></Warning>
             <Form.Control
-              className="move-out-textbox"
+              className="renew-textbox"
               type="text"
               onChange={this.handleChange}
               value={this.state.confirmText} />
@@ -91,12 +95,6 @@ export class EarlyMoveOutModal extends Component {
               }}>
               Close
             </Button>
-            {/* <Button
-              variant="primary"
-              onClick={props.handleMoveOutSubmit}
-              disabled={!this.validateText()}>
-              Save Changes
-            </Button> */}
             <LoaderButton type="submit"
               block
               variant="outline-danger"
@@ -115,4 +113,4 @@ export class EarlyMoveOutModal extends Component {
   }
 }
 
-export default EarlyMoveOutModal
+export default RenewModal

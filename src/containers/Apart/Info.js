@@ -71,13 +71,15 @@ export class ApartInfo extends Component {
       isExpanded: false,
       residents: [],
       apart: "",
-      modalShow: false,
+      modalMoveOutShow: false,
+      modalRenewShow: false,
       modalConfirmShow: false,
       modalAlertShow: false,
       modalMessage: "",
       indexToDelete: "",
       moveOutDate: new Date(),
       moveOutMessage: [],
+      newLeaseTerm: "",
     }
   }
 
@@ -131,12 +133,20 @@ export class ApartInfo extends Component {
     })
   }
 
-  handleModalShow = () => {
-    this.setState({ modalShow: true })
+  handleMoveOutModalShow = () => {
+    this.setState({ modalMoveOutShow: true })
   }
 
-  handleModalClose = () => {
-    this.setState({ modalShow: false })
+  handleMoveOutModalClose = () => {
+    this.setState({ modalMoveOutShow: false })
+  }
+
+  handleRenewModalShow = () => {
+    this.setState({ modalRenewShow: true })
+  }
+
+  handleRenewModalClose = () => {
+    this.setState({ modalRenewShow: false })
   }
 
   handleModalAlertClose = () => {
@@ -306,7 +316,44 @@ export class ApartInfo extends Component {
     }
 
     this.getApartInfo("check")
-    this.handleModalClose()
+    this.handleMoveOutModalClose()
+  }
+
+  handleRenewChange = (key, e) => {
+    // this.setState({ newLeaseTerm: e.target.value })
+    e.persist()
+    this.setState({
+      [key]: e.target.text
+    })
+  }
+
+  handleRenewSubmit = async (e) => {
+    e.preventDefault()
+    const nlt = this.state.newLeaseTerm
+    if (nlt < 6 || nlt > 12) {
+      return
+    }
+
+    this.setState({ isLoading: true })
+
+    const newLeaseStartDate = this.state.apart.leaseEndDate
+    const newLeaseEndDate = moment(newLeaseStartDate).add(nlt, 'months')
+
+    try {
+      await API.put('apt', `/aparts/renew/${this.state.apartId}`, {
+        body: {
+          newLeaseTerm: this.state.newLeaseTerm,
+          newLeaseStartDate: newLeaseStartDate,
+          newLeaseEndDate: newLeaseEndDate,
+        }
+      })
+    } catch (e) {
+      console.log(e, e.response)
+      this.setState({ isLoading: false })
+    }
+
+    this.getApartInfo("check")
+    this.handleRenewModalClose()
   }
 
   render() {
@@ -354,7 +401,8 @@ export class ApartInfo extends Component {
             state={this.state}
 
             isLoading={this.state.isLoading}
-            modalShow={this.state.modalShow}
+            modalMoveOutShow={this.state.modalMoveOutShow}
+            modalRenewShow={this.state.modalRenewShow}
             moveOutDate={this.state.moveOutDate}
             moveOutMessage={this.state.moveOutMessage}
 
@@ -362,10 +410,15 @@ export class ApartInfo extends Component {
             apartRef={this.apartRef}
             theme={this.props.theme}
             leaseEndDate={apart.leaseEndDate}
-            handleModalShow={this.handleModalShow}
-            handleModalClose={this.handleModalClose}
+            newLeaseTerm={this.state.newLeaseTerm}
+            handleMoveOutModalShow={this.handleMoveOutModalShow}
+            handleRenewModalShow={this.handleRenewModalShow}
+            handleMoveOutModalClose={this.handleMoveOutModalClose}
+            handleRenewModalClose={this.handleRenewModalClose}
             handleDateChange={this.handleDateChange}
+            handleRenewChange={this.handleRenewChange}
             handleMoveOutSubmit={this.handleMoveOutSubmit}
+            handleRenewSubmit={this.handleRenewSubmit}
           />
         }
 
