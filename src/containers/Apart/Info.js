@@ -11,7 +11,7 @@
 
 import React, { Component } from 'react'
 import styled from 'styled-components'
-import { Container, Image, Row, Col, Form } from "react-bootstrap";
+import { Container, Image, Row, Col, Form, Button } from "react-bootstrap";
 import LoaderButton from '../../components/LoaderButton'
 import { API } from 'aws-amplify'
 import UnitInfo from './UnitInfo'
@@ -19,6 +19,7 @@ import ConfirmModal from '../../components/ConfirmModal'
 import AlertModal from '../../components/AlertModal'
 import queryString from 'query-string'
 import moment from 'moment'
+import { Link } from 'react-router-dom'
 
 
 const StyledContainer = styled(Container)`
@@ -26,6 +27,17 @@ const StyledContainer = styled(Container)`
   max-width: 700px;
   .btn-container {
     text-align: right;
+  }
+  .form-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  .btn-add-units {
+    margin: 2em 0 2em 2rem;
+    button {
+      height: 80px;
+    }
   }
 `
 
@@ -51,8 +63,8 @@ const StyledApartList = styled.div`
 `
 
 const StyledForm = styled(Form)`
-  max-width: 500px;
-  margin: 2em auto 3em auto;
+  width: 70%;
+  margin: 2em 0;
 `
 
 
@@ -363,7 +375,7 @@ export class ApartInfo extends Component {
         <StyledApartList>
           <Row>
             <Col sm={4} className="apt-img">
-              <Image src="https://s3.us-east-2.amazonaws.com/apt-api-dev-attachmentsbucket-15cyis9p1flj3/public/savoy-main.jpg" fluid />
+              <Image src="https://s3.us-east-2.amazonaws.com/apt-api-dev-attachmentsbucket-11ysd3am6wave/public/savoy-main.jpeg" fluid />
             </Col>
             <Col sm={8} className="apt-desc">
               <div>
@@ -377,7 +389,7 @@ export class ApartInfo extends Component {
             </Col>
           </Row>
         </StyledApartList>
-        <div>
+        <div className='form-wrapper'>
           <StyledForm>
             <Form.Control size="lg" type="text"
               placeholder="Apt Number" id="apartId"
@@ -394,6 +406,10 @@ export class ApartInfo extends Component {
               loadingText="Checking..">
             </LoaderButton>
           </StyledForm>
+          <Link to='/add-units' className="btn-add-units">
+            <Button
+              variant="outline-primary">Add Units</Button>
+          </Link>
         </div>
 
         {this.state.isExpanded && apart &&
