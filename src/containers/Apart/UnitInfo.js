@@ -6,6 +6,7 @@ import { Link } from 'react-router-dom'
 import LoaderButton from '../../components/LoaderButton';
 import EarlyMoveOutModal from './EarlyMoveOutModal';
 import RenewModal from './RenewModal';
+import RecentActivity from './RecentActivity';
 
 
 const StyledExpandedForm = styled(Form)`
@@ -63,7 +64,7 @@ const StyledCard = styled(Card)`
 `
 
 const UnitInfo = ({ state, ...rest }) => {
-  const { apart } = state
+  const { apart, payments } = state
 
   const formatPhoneNumber = phoneNumberString => {
     var cleaned = (phoneNumberString).replace(/\D/g, '')
@@ -275,6 +276,15 @@ const UnitInfo = ({ state, ...rest }) => {
           </Card.Footer>
         </StyledCard>
       )}
+      <StyledCard border="success">
+        <Card.Body>
+          <Card.Title>
+            <h1>Recent Payment Activity</h1>
+          </Card.Title>
+          <RecentActivity
+            payments={payments} />
+        </Card.Body>
+      </StyledCard>
 
       <EarlyMoveOutModal
         theme={rest.theme}

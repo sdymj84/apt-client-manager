@@ -83,6 +83,7 @@ export class ApartInfo extends Component {
       isExpanded: false,
       residents: [],
       apart: "",
+      payments: "",
       modalMoveOutShow: false,
       modalRenewShow: false,
       modalConfirmShow: false,
@@ -216,6 +217,9 @@ export class ApartInfo extends Component {
         }))
         return result
       })
+      let payments = await API.get('apt', `/payments/${this.state.apartId}`)
+      payments = payments.Items
+
       Promise.all(residents).then((residents) => {
         let primaryIndex = 0
         let primaryResident = {}
@@ -234,6 +238,7 @@ export class ApartInfo extends Component {
           isExpanded: true,
           residents,
           apart,
+          payments,
           moveOutDate: apart.leaseEndDate
         })
 
