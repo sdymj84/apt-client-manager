@@ -93,6 +93,7 @@ export class ApartInfo extends Component {
       moveOutDate: new Date(),
       moveOutMessage: [],
       newLeaseTerm: "",
+      earlyMoveOutFee: "",
     }
   }
 
@@ -279,6 +280,7 @@ export class ApartInfo extends Component {
     const diffDays = moveOutDate.diff(today, 'days')
     const oneDayProrated = Math.round(rentPrice / 0.3) / 100
     let extraPayment = 0
+    let earlyMoveOutFee = 0
     const formatter = new Intl.NumberFormat('en-US', {
       style: 'currency',
       currency: 'USD',
@@ -304,16 +306,18 @@ export class ApartInfo extends Component {
     }
 
     if (moveOutDate < leaseEndDate || diffDays < 60) {
+      earlyMoveOutFee = Number(rentPrice) + Number(extraPayment)
       moveOutMessage.push(`<div class="total-container">
       <div><strong>
-      Total : ${formatter.format(Number(rentPrice) + Number(extraPayment))}
+      Total : ${formatter.format(earlyMoveOutFee)}
       </strong></div></div>`)
     }
 
     this.setState({
       moveOutDate: date,
-      moveOutMessage
-    })
+      moveOutMessage,
+      earlyMoveOutFee,
+    }, () => console.log(this.state.earlyMoveOutFee))
   }
 
   handleMoveOutSubmit = async (e) => {
