@@ -46,6 +46,12 @@ export class EarlyMoveOutModal extends Component {
     return this.state.confirmText === "MoveOut"
   }
 
+  handleSubmit = (e) => {
+    e.preventDefault()
+    this.emptyConfirmText()
+    this.props.handleMoveOutSubmit(e)
+  }
+
   render() {
     const props = this.props
     return (
@@ -55,7 +61,7 @@ export class EarlyMoveOutModal extends Component {
           this.emptyConfirmText()
           props.handleModalClose()
         }}>
-        <Form onSubmit={props.handleMoveOutSubmit}>
+        <Form onSubmit={this.handleSubmit}>
           <Modal.Header closeButton>
             <Modal.Title>Early Move Out</Modal.Title>
           </Modal.Header>
@@ -100,9 +106,6 @@ export class EarlyMoveOutModal extends Component {
             <LoaderButton type="submit"
               block
               variant="outline-danger"
-              onClick={() => {
-                this.emptyConfirmText()
-              }}
               disabled={!this.validateText()}
               isLoading={props.isLoading}
               text="Update"

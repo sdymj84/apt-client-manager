@@ -317,12 +317,10 @@ export class ApartInfo extends Component {
       moveOutDate: date,
       moveOutMessage,
       earlyMoveOutFee,
-    }, () => console.log(this.state.earlyMoveOutFee))
+    })
   }
 
-  handleMoveOutSubmit = async (e) => {
-    e.preventDefault()
-
+  handleMoveOutSubmit = async () => {
     this.setState({ isLoading: true })
 
     try {
@@ -331,6 +329,8 @@ export class ApartInfo extends Component {
           moveOutDate: this.state.moveOutDate
         }
       })
+      // Add earlyMoveOutFee to payments db with apartId
+      await this.addCharge(this.state.apartId)
     } catch (e) {
       console.log(e, e.response)
       this.setState({ isLoading: false })
@@ -338,6 +338,21 @@ export class ApartInfo extends Component {
 
     this.getApartInfo("check")
     this.handleMoveOutModalClose()
+  }
+
+  addCharge = async (apartId) => {
+    try {
+      const payment = await API.post('apt', '/payments', {
+        body: {
+          apartId,
+          title: "Early Move Out Fee",
+          charge: this.state.earlyMoveOutFee,
+          payment: 0,
+        }
+      })
+    } catch (e) {
+      console.log(e, e.response)
+    }
   }
 
   handleRenewChange = (key, e) => {
