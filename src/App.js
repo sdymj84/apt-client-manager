@@ -15,7 +15,13 @@ const GlobalStyle = createGlobalStyle`
 `
 const StyledContainer = styled(Container)`
   margin-top: 15px;
-
+  .container {
+    padding-right: 7px;
+    padding-left: 7px;
+  }
+  .card-body {
+    padding: 1rem;
+  }
   .navbar-brand a {
     color: ${props => props.theme.brandColor};
     text-decoration: none;

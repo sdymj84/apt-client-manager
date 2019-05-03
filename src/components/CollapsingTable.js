@@ -13,7 +13,8 @@ const StyledTable = styled.div`
     margin: 10px 0;
   }
   .react-collapsible-theme .react-collapsible-search input {
-    width: 16rem;
+    width: 80%;
+	  max-width: 14em;
   }
   .react-collapsible-theme .react-collapsible .child-content {
     flex-basis: 100%;
