@@ -342,7 +342,7 @@ export class ApartInfo extends Component {
 
   addCharge = async (apartId) => {
     try {
-      const payment = await API.post('apt', '/payments', {
+      await API.post('apt', '/payments', {
         body: {
           apartId,
           title: "Early Move Out Fee",
