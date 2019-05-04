@@ -181,17 +181,59 @@ export class ApartInfo extends Component {
       }
     })
 
-    const { apartId, residentId } = this.state.residents[this.state.indexToDelete]
-
-    try {
-      await API.put('apt', `/aparts/${apartId}/remove/${residentId}`)
-      this.getApartInfo("delete")
-      await API.del('apt', `/residents/${residentId}`)
-    } catch (e) {
-      console.log(e, e.response)
-    }
 
     const deletingUser = this.state.residents[this.state.indexToDelete]
+    const { apartId, residentId } = deletingUser
+    const { autopayResidentId } = this.state.apart
+    const isApartEmptyNow = (this.state.residents.length === 1) ? true : false
+    const balance = Number(this.state.payments[0].balance)
+    console.log(this.state)
+
+
+    if (balance) {
+      this.setState(prevState => ({
+        modalAlertShow: true,
+        modalMessage: `<div>Warning: Remaining balance is not Zero</div>`
+          + `<div>Balance: ${balance}</div>`
+          + `<div>Can't proceed further. Please make balace 0 before deleting resident.</div>`,
+        isDeleting: prevState.isDeleting.map(isDel => false),
+      }))
+      return
+    }
+
+
+    try {
+      // Delete resident data
+      await API.put('apt', `/aparts/${apartId}/remove/${residentId}`)
+      await API.del('apt', `/residents/${residentId}`)
+
+      // Delete autopay data if this resident has registered autopay
+      if (residentId === autopayResidentId) {
+        await API.put('apt', `/aparts/updateAutopay/${apartId}`, {
+          body: {
+            isAutopayEnabled: false,
+            autopay: {
+              startDate: "",
+              endDate: "",
+              payOnDay: "",
+              residentId: "",
+            }
+          }
+        })
+      }
+
+      // Delete payment data if apart is empty
+      if (isApartEmptyNow) {
+        await API.del('apt', `/payments/${apartId}`)
+      }
+
+      this.getApartInfo("delete")
+      console.log(this.state)
+    } catch (e) {
+      console.log(e, e.response)
+      console.log(this.state)
+    }
+
     deletingUser && this.setState(prevState => ({
       isDeleting: prevState.isDeleting.map(isDel => false),
       modalAlertShow: true,
@@ -202,7 +244,7 @@ export class ApartInfo extends Component {
         + `<div>email: ${deletingUser.email}</div>`
         + "<br/><div>Press OK only after you've deleted the user from UserPool.</div>"
     }))
-
+    console.log(this.state)
   }
 
   // show or refresh user info (expanded cards)

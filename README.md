@@ -1,6 +1,6 @@
 # Apartment Management Portal
 ### Apartment Management Portal for residents and office workers (managers) which was motivated and referenced by RENTCafé
-### Checkout live app here : [[For residents]]( http://apt-client-resident.s3-website.us-east-2.amazonaws.com) [[For managers]](http://apt-client-manager2.s3-website.us-east-2.amazonaws.com)
+### Checkout live app here : [[For residents]](http://apt-client-resident.s3-website.us-east-2.amazonaws.com) [[For managers]](http://apt-client-manager2.s3-website.us-east-2.amazonaws.com)
 ### Click [[HERE]](https://github.com/sdymj84/apt-client) for github address of Resident app
 ### Click [[HERE]](https://github.com/sdymj84/apt-client-manager) for github address of Manager app
 ### Click [[HERE]](https://github.com/sdymj84/apt-api) for github address of Server code
