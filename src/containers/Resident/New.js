@@ -283,7 +283,9 @@ export class New extends Component {
             modalMessage: `<div>This person is current resident in Apt ${userInfo.apartId}</div>`
               + `<div>Please follow below instruction if the resident is trying to move in the same apartment</div>`
               + `<ul><li>Main menu > Apartment</li><li>Enter ${userInfo.apartId}</li>`
-              + `<li>Find the resident and click "Move"</li></ul>`,
+              + `<li>Find the resident and click "DELETE"</li>`
+              + `<li>Follow instruction to delete completely</li>`
+              + `<li>Come back here and add resident</li></ul>`,
             modalAlertShow: true,
             isLoading: false
           })
@@ -296,8 +298,11 @@ export class New extends Component {
           })
           await this.createResidentDB()
           await this.updateResidentInUnit()
+          const resident = await this.getResidentInfoByEmail(credentials.username)
           this.setState({
-            modalMessage: "Resident is successfully added.\nWould you like to add more resident in this unit?",
+            modalMessage: "<div>Resident is successfully added.</div>"
+              + `<div>Temporary Password : <strong>${resident.regiNum}</strong></div></br>`
+              + "<div>Would you like to add more resident in this unit?</div>",
             modalActive: 2,
             modalShow: true,
             isLoading: false

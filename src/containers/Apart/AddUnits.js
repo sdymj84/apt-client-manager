@@ -107,7 +107,7 @@ export class AddUnits extends Component {
   handleSubmit = async (e) => {
     e.preventDefault()
 
-    this.setState(prevState => ({
+    await this.setState(prevState => ({
       isLoading: true,
       address: {
         ...prevState.address,

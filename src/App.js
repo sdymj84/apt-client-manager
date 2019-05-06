@@ -124,7 +124,10 @@ class App extends Component {
           </Body>
 
           <Footer variant="light" bg="light" expand="md">
-            <div>Designed and developed by Minjun Youn.</div>
+            <div>
+              <div>Designed and developed by Minjun Youn.</div>
+              <div>Contact: sdymj84@gmail.com</div>
+            </div>
           </Footer>
         </StyledContainer>
       </ThemeProvider>

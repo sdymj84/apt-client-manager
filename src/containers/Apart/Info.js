@@ -187,8 +187,6 @@ export class ApartInfo extends Component {
     const { autopayResidentId } = this.state.apart
     const isApartEmptyNow = (this.state.residents.length === 1) ? true : false
     const balance = Number(this.state.payments[0].balance)
-    console.log(this.state)
-
 
     if (balance) {
       this.setState(prevState => ({
@@ -228,10 +226,8 @@ export class ApartInfo extends Component {
       }
 
       this.getApartInfo("delete")
-      console.log(this.state)
     } catch (e) {
       console.log(e, e.response)
-      console.log(this.state)
     }
 
     deletingUser && this.setState(prevState => ({
@@ -244,7 +240,6 @@ export class ApartInfo extends Component {
         + `<div>email: ${deletingUser.email}</div>`
         + "<br/><div>Press OK only after you've deleted the user from UserPool.</div>"
     }))
-    console.log(this.state)
   }
 
   // show or refresh user info (expanded cards)
