@@ -7,6 +7,19 @@ import { GiAutoRepair, GiHouse } from "react-icons/gi";
 import { GoMegaphone } from 'react-icons/go'
 import { Link } from "react-router-dom";
 import { API } from 'aws-amplify'
+import posed from 'react-pose'
+
+const PosedDiv = posed.div({
+  visible: {
+    opacity: 1,
+    y: 0,
+    delay: p => p.delay,
+  },
+  hidden: {
+    opacity: 0,
+    y: 50,
+  }
+})
 
 const StyledContainer = styled(Container)`
   text-align: center;
@@ -63,11 +76,13 @@ const StyledBadge = styled(Badge)`
 export class Home extends Component {
   _isMounted = false
   state = {
-    requestsCount: 0
+    requestsCount: 0,
+    isVisible: false,
   }
 
   componentDidMount = async () => {
     this._isMounted = true
+    this.setState({ isVisible: true })
     if (this.props.isAuthenticated) {
       try {
         const result = await API.get('apt', '/requests/list')
@@ -81,21 +96,21 @@ export class Home extends Component {
   componentWillUnmount() {
     this._isMounted = false
   }
-  
+
 
   renderLander() {
     return (
       <StyledContainer>
         <FlexContainer>
-          <div>
+          <PosedDiv pose={this.state.isVisible ? "visible" : "hidden"}>
             <h2>SAVOY Apartment Management Portal</h2>
-          </div>
+          </PosedDiv>
         </FlexContainer>
-        <div>
+        <PosedDiv pose={this.state.isVisible ? "visible" : "hidden"} delay={50}>
           <LinkContainer to='/login'>
             <Button variant={`outline-${this.props.theme.buttonTheme}`} size="lg">EMPLOYEE LOG IN</Button>
           </LinkContainer>
-        </div>
+        </PosedDiv>
       </StyledContainer>
     )
   }
